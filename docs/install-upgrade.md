@@ -34,20 +34,20 @@ Use the following resources to prepare your implementation and install the Commu
 
 ### Understand Deployment Scopes
 
-You can deploy the MongoDB Community Kubernetes Operator with different scopes based on where you want to deploy MongoDBCommunity resources:
+You can deploy the MongoDB Community Kubernetes Operator with different scopes based on where you want to deploy ADMongoDBCommunity resources:
 
 - [Operator in Same Namespace as Resources](#operator-in-same-namespace-as-resources)
 - [Operator in Different Namespace Than Resources](#operator-in-different-namespace-than-resources)
 
 #### Operator in Same Namespace as Resources
 
-You scope the Operator to a namespace. The Operator watches MongoDBCommunity resources in that same [namespace](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/).
+You scope the Operator to a namespace. The Operator watches ADMongoDBCommunity resources in that same [namespace](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/).
 
 This is the default scope when you [install the Operator using Helm](#install-the-operator-using-helm) or [install the Operator using kubectl](#install-the-operator-using-kubectl).
 
 #### Operator in Different Namespace Than Resources
 
-You scope the Operator to a namespace. The Operator watches MongoDBCommunity resources in other namespaces.
+You scope the Operator to a namespace. The Operator watches ADMongoDBCommunity resources in other namespaces.
 
 To deploy the Operator in a different namespace than the resources, [Install in a Different Namespace using Helm](#install-in-a-different-namespace-using-helm) or [Install in a Different Namespace using kubectl](#install-in-a-different-namespace-using-kubectl).
 
@@ -259,8 +259,8 @@ Make sure you run commands in the correct namespace.
 
    a. Migrate your cr by updating apiVersion and kind to
       ```
-      apiVersion: mongodbcommunity.mongodb.com/v1
-      kind: MongoDBCommunity
+      apiVersion: admongodbcommunity.mongodb.com/v1
+      kind: ADADMongoDBCommunity
       ```
       If you upgrade from pre-0.3.0 you need to also add the field spec.users[n].scramCredentialsSecretName for each resource. This will be used to determine the name of the generated secret which stores MongoDB user credentials. This field must comply with DNS-1123 rules (see https://kubernetes.io/docs/concepts/overview/working-with-objects/names/).
    b. Plan a downtime.

@@ -15,8 +15,8 @@ import (
 func OnlyOnSpecChange() predicate.Funcs {
 	return predicate.Funcs{
 		UpdateFunc: func(e event.UpdateEvent) bool {
-			oldResource := e.ObjectOld.(*mdbv1.MongoDBCommunity)
-			newResource := e.ObjectNew.(*mdbv1.MongoDBCommunity)
+			oldResource := e.ObjectOld.(*mdbv1.ADMongoDBCommunity)
+			newResource := e.ObjectNew.(*mdbv1.ADMongoDBCommunity)
 			specChanged := !reflect.DeepEqual(oldResource.Spec, newResource.Spec)
 			return specChanged
 		},

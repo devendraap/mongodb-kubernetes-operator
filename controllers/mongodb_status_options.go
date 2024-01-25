@@ -52,7 +52,7 @@ type mongoUriOption struct {
 	mongoUri string
 }
 
-func (m mongoUriOption) ApplyOption(mdb *mdbv1.MongoDBCommunity) {
+func (m mongoUriOption) ApplyOption(mdb *mdbv1.ADMongoDBCommunity) {
 	mdb.Status.MongoURI = m.mongoUri
 }
 
@@ -72,7 +72,7 @@ type versionOption struct {
 	version string
 }
 
-func (v versionOption) ApplyOption(mdb *mdbv1.MongoDBCommunity) {
+func (v versionOption) ApplyOption(mdb *mdbv1.ADMongoDBCommunity) {
 	mdb.Status.Version = v.version
 }
 
@@ -98,7 +98,7 @@ type messageOption struct {
 	message message
 }
 
-func (m messageOption) ApplyOption(mdb *mdbv1.MongoDBCommunity) {
+func (m messageOption) ApplyOption(mdb *mdbv1.ADMongoDBCommunity) {
 	mdb.Status.Message = m.message.messageString
 	if m.message.severityLevel == Error {
 		zap.S().Error(m.message.messageString)
@@ -177,7 +177,7 @@ type phaseOption struct {
 	retryAfter int
 }
 
-func (p phaseOption) ApplyOption(mdb *mdbv1.MongoDBCommunity) {
+func (p phaseOption) ApplyOption(mdb *mdbv1.ADMongoDBCommunity) {
 	mdb.Status.Phase = p.phase
 }
 
@@ -198,7 +198,7 @@ type mongoDBReplicasOption struct {
 	mongoDBMembers int
 }
 
-func (a mongoDBReplicasOption) ApplyOption(mdb *mdbv1.MongoDBCommunity) {
+func (a mongoDBReplicasOption) ApplyOption(mdb *mdbv1.ADMongoDBCommunity) {
 	mdb.Status.CurrentMongoDBMembers = a.mongoDBMembers
 }
 
@@ -210,7 +210,7 @@ type statefulSetReplicasOption struct {
 	replicas int
 }
 
-func (s statefulSetReplicasOption) ApplyOption(mdb *mdbv1.MongoDBCommunity) {
+func (s statefulSetReplicasOption) ApplyOption(mdb *mdbv1.ADMongoDBCommunity) {
 	mdb.Status.CurrentStatefulSetReplicas = s.replicas
 }
 
@@ -222,7 +222,7 @@ type mongoDBArbitersOption struct {
 	mongoDBArbiters int
 }
 
-func (a mongoDBArbitersOption) ApplyOption(mdb *mdbv1.MongoDBCommunity) {
+func (a mongoDBArbitersOption) ApplyOption(mdb *mdbv1.ADMongoDBCommunity) {
 	mdb.Status.CurrentMongoDBArbiters = a.mongoDBArbiters
 }
 
@@ -234,7 +234,7 @@ type statefulSetArbitersOption struct {
 	arbiters int
 }
 
-func (s statefulSetArbitersOption) ApplyOption(mdb *mdbv1.MongoDBCommunity) {
+func (s statefulSetArbitersOption) ApplyOption(mdb *mdbv1.ADMongoDBCommunity) {
 	mdb.Status.CurrentStatefulSetArbitersReplicas = s.arbiters
 }
 

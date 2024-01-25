@@ -289,7 +289,7 @@ func TestStatefulSetIsCorrectlyConfiguredWithTLSAfterChangingExistingVolumes(t *
 }
 
 func TestAutomationConfigIsCorrectlyConfiguredWithTLS(t *testing.T) {
-	createAC := func(mdb mdbv1.MongoDBCommunity) automationconfig.AutomationConfig {
+	createAC := func(mdb mdbv1.ADMongoDBCommunity) automationconfig.AutomationConfig {
 		client := kubeClient.NewClient(kubeClient.NewManager(&mdb).GetClient())
 		err := createTLSSecret(client, mdb, "CERT", "KEY", "")
 		assert.NoError(t, err)
@@ -550,7 +550,7 @@ func TestTLSConfigReferencesToCACertAreValidated(t *testing.T) {
 
 }
 
-func createTLSConfigMap(c k8sClient.Client, mdb mdbv1.MongoDBCommunity) error {
+func createTLSConfigMap(c k8sClient.Client, mdb mdbv1.ADMongoDBCommunity) error {
 	if !mdb.Spec.Security.TLS.Enabled {
 		return nil
 	}
@@ -584,23 +584,23 @@ func createTLSSecretWithNamespaceAndName(c k8sClient.Client, namespace string, n
 	return c.Create(context.TODO(), &s)
 }
 
-func createTLSSecret(c k8sClient.Client, mdb mdbv1.MongoDBCommunity, crt string, key string, pem string) error {
+func createTLSSecret(c k8sClient.Client, mdb mdbv1.ADMongoDBCommunity, crt string, key string, pem string) error {
 	return createTLSSecretWithNamespaceAndName(c, mdb.Namespace, mdb.Spec.Security.TLS.CertificateKeySecret.Name, crt, key, pem)
 }
 
-func createAgentCertSecret(c k8sClient.Client, mdb mdbv1.MongoDBCommunity, crt string, key string, pem string) error {
+func createAgentCertSecret(c k8sClient.Client, mdb mdbv1.ADMongoDBCommunity, crt string, key string, pem string) error {
 	return createTLSSecretWithNamespaceAndName(c, mdb.Namespace, mdb.AgentCertificateSecretNamespacedName().Name, crt, key, pem)
 }
 
-func createAgentCertPemSecret(c k8sClient.Client, mdb mdbv1.MongoDBCommunity, crt string, key string, pem string) error {
+func createAgentCertPemSecret(c k8sClient.Client, mdb mdbv1.ADMongoDBCommunity, crt string, key string, pem string) error {
 	return createTLSSecretWithNamespaceAndName(c, mdb.Namespace, mdb.AgentCertificatePemSecretNamespacedName().Name, crt, key, pem)
 }
 
-func createPrometheusTLSSecret(c k8sClient.Client, mdb mdbv1.MongoDBCommunity, crt string, key string, pem string) error {
+func createPrometheusTLSSecret(c k8sClient.Client, mdb mdbv1.ADMongoDBCommunity, crt string, key string, pem string) error {
 	return createTLSSecretWithNamespaceAndName(c, mdb.Namespace, mdb.Spec.Prometheus.TLSSecretRef.Name, crt, key, pem)
 }
 
-func createUserPasswordSecret(c k8sClient.Client, mdb mdbv1.MongoDBCommunity, userPasswordSecretName string, password string) error {
+func createUserPasswordSecret(c k8sClient.Client, mdb mdbv1.ADMongoDBCommunity, userPasswordSecretName string, password string) error {
 	sBuilder := secret.Builder().
 		SetName(userPasswordSecretName).
 		SetNamespace(mdb.Namespace).

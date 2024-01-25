@@ -50,14 +50,14 @@ func init() {
 	os.Setenv(construct.AgentImageEnv, "agent-image")
 }
 
-func newTestReplicaSet() mdbv1.MongoDBCommunity {
-	return mdbv1.MongoDBCommunity{
+func newTestReplicaSet() mdbv1.ADMongoDBCommunity {
+	return mdbv1.ADMongoDBCommunity{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:        "my-rs",
 			Namespace:   "my-ns",
 			Annotations: map[string]string{},
 		},
-		Spec: mdbv1.MongoDBCommunitySpec{
+		Spec: mdbv1.ADMongoDBCommunitySpec{
 			Members: 3,
 			Version: "6.0.5",
 			Security: mdbv1.Security{
@@ -69,14 +69,14 @@ func newTestReplicaSet() mdbv1.MongoDBCommunity {
 	}
 }
 
-func newTestReplicaSetWithSystemLogAndLogRotate() mdbv1.MongoDBCommunity {
-	return mdbv1.MongoDBCommunity{
+func newTestReplicaSetWithSystemLogAndLogRotate() mdbv1.ADMongoDBCommunity {
+	return mdbv1.ADMongoDBCommunity{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:        "my-rs",
 			Namespace:   "my-ns",
 			Annotations: map[string]string{},
 		},
-		Spec: mdbv1.MongoDBCommunitySpec{
+		Spec: mdbv1.ADMongoDBCommunitySpec{
 			Members: 3,
 			Version: "6.0.5",
 			Security: mdbv1.Security{
@@ -97,14 +97,14 @@ func newTestReplicaSetWithSystemLogAndLogRotate() mdbv1.MongoDBCommunity {
 	}
 }
 
-func newScramReplicaSet(users ...mdbv1.MongoDBUser) mdbv1.MongoDBCommunity {
-	return mdbv1.MongoDBCommunity{
+func newScramReplicaSet(users ...mdbv1.MongoDBUser) mdbv1.ADMongoDBCommunity {
+	return mdbv1.ADMongoDBCommunity{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:        "my-rs",
 			Namespace:   "my-ns",
 			Annotations: map[string]string{},
 		},
-		Spec: mdbv1.MongoDBCommunitySpec{
+		Spec: mdbv1.ADMongoDBCommunitySpec{
 			Users:   users,
 			Members: 3,
 			Version: "4.2.2",
@@ -117,7 +117,7 @@ func newScramReplicaSet(users ...mdbv1.MongoDBUser) mdbv1.MongoDBCommunity {
 	}
 }
 
-func newTestReplicaSetWithTLS() mdbv1.MongoDBCommunity {
+func newTestReplicaSetWithTLS() mdbv1.ADMongoDBCommunity {
 	return newTestReplicaSetWithTLSCaCertificateReferences(&corev1.LocalObjectReference{
 		Name: "caConfigMap",
 	},
@@ -126,14 +126,14 @@ func newTestReplicaSetWithTLS() mdbv1.MongoDBCommunity {
 		})
 }
 
-func newTestReplicaSetWithTLSCaCertificateReferences(caConfigMap, caCertificateSecret *corev1.LocalObjectReference) mdbv1.MongoDBCommunity {
-	return mdbv1.MongoDBCommunity{
+func newTestReplicaSetWithTLSCaCertificateReferences(caConfigMap, caCertificateSecret *corev1.LocalObjectReference) mdbv1.ADMongoDBCommunity {
+	return mdbv1.ADMongoDBCommunity{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:        "my-rs",
 			Namespace:   "my-ns",
 			Annotations: map[string]string{},
 		},
-		Spec: mdbv1.MongoDBCommunitySpec{
+		Spec: mdbv1.ADMongoDBCommunitySpec{
 			Members: 3,
 			Version: "4.2.2",
 			Security: mdbv1.Security{
@@ -209,7 +209,7 @@ func TestStatefulSet_IsCorrectlyConfigured(t *testing.T) {
 func TestGuessEnterprise(t *testing.T) {
 	type testConfig struct {
 		setArgs            func(t *testing.T)
-		mdb                mdbv1.MongoDBCommunity
+		mdb                mdbv1.ADMongoDBCommunity
 		expectedEnterprise bool
 	}
 	tests := map[string]testConfig{
@@ -218,7 +218,7 @@ func TestGuessEnterprise(t *testing.T) {
 				t.Setenv(construct.MongodbRepoUrl, "docker.io/mongodb")
 				t.Setenv(construct.MongodbImageEnv, "mongodb-community-server")
 			},
-			mdb:                mdbv1.MongoDBCommunity{},
+			mdb:                mdbv1.ADMongoDBCommunity{},
 			expectedEnterprise: false,
 		},
 		"No override and Enterprise image": {
@@ -226,7 +226,7 @@ func TestGuessEnterprise(t *testing.T) {
 				t.Setenv(construct.MongodbRepoUrl, "docker.io/mongodb")
 				t.Setenv(construct.MongodbImageEnv, "mongodb-enterprise-server")
 			},
-			mdb:                mdbv1.MongoDBCommunity{},
+			mdb:                mdbv1.ADMongoDBCommunity{},
 			expectedEnterprise: true,
 		},
 		"Assuming enterprise manually": {
@@ -235,7 +235,7 @@ func TestGuessEnterprise(t *testing.T) {
 				t.Setenv(construct.MongodbImageEnv, "mongodb-community-server")
 				t.Setenv(construct.MongoDBAssumeEnterpriseEnv, "true")
 			},
-			mdb:                mdbv1.MongoDBCommunity{},
+			mdb:                mdbv1.ADMongoDBCommunity{},
 			expectedEnterprise: true,
 		},
 		"Assuming community manually": {
@@ -244,7 +244,7 @@ func TestGuessEnterprise(t *testing.T) {
 				t.Setenv(construct.MongodbImageEnv, "mongodb-enterprise-server")
 				t.Setenv(construct.MongoDBAssumeEnterpriseEnv, "false")
 			},
-			mdb:                mdbv1.MongoDBCommunity{},
+			mdb:                mdbv1.ADMongoDBCommunity{},
 			expectedEnterprise: false,
 		},
 		"Enterprise with different repo": {
@@ -252,7 +252,7 @@ func TestGuessEnterprise(t *testing.T) {
 				t.Setenv(construct.MongodbRepoUrl, "some_other_repo.com/some_other_org")
 				t.Setenv(construct.MongodbImageEnv, "mongodb-enterprise-server")
 			},
-			mdb:                mdbv1.MongoDBCommunity{},
+			mdb:                mdbv1.ADMongoDBCommunity{},
 			expectedEnterprise: true,
 		},
 		"Community with different repo": {
@@ -260,7 +260,7 @@ func TestGuessEnterprise(t *testing.T) {
 				t.Setenv(construct.MongodbRepoUrl, "some_other_repo.com/some_other_org")
 				t.Setenv(construct.MongodbImageEnv, "mongodb-community-server")
 			},
-			mdb:                mdbv1.MongoDBCommunity{},
+			mdb:                mdbv1.ADMongoDBCommunity{},
 			expectedEnterprise: false,
 		},
 		// This one is a corner case. We don't expect users to fall here very often as there are
@@ -270,8 +270,8 @@ func TestGuessEnterprise(t *testing.T) {
 				t.Setenv(construct.MongodbRepoUrl, "some_other_repo.com/some_other_org")
 				t.Setenv(construct.MongodbImageEnv, "mongodb-community-server")
 			},
-			mdb: mdbv1.MongoDBCommunity{
-				Spec: mdbv1.MongoDBCommunitySpec{
+			mdb: mdbv1.ADMongoDBCommunity{
+				Spec: mdbv1.ADMongoDBCommunitySpec{
 					StatefulSetConfiguration: mdbv1.StatefulSetConfiguration{
 						SpecWrapper: mdbv1.StatefulSetSpecWrapper{
 							Spec: appsv1.StatefulSetSpec{
@@ -297,8 +297,8 @@ func TestGuessEnterprise(t *testing.T) {
 				t.Setenv(construct.MongodbRepoUrl, "some_other_repo.com/some_other_org")
 				t.Setenv(construct.MongodbImageEnv, "mongodb-enterprise-server")
 			},
-			mdb: mdbv1.MongoDBCommunity{
-				Spec: mdbv1.MongoDBCommunitySpec{
+			mdb: mdbv1.ADMongoDBCommunity{
+				Spec: mdbv1.ADMongoDBCommunitySpec{
 					StatefulSetConfiguration: mdbv1.StatefulSetConfiguration{
 						SpecWrapper: mdbv1.StatefulSetSpecWrapper{
 							Spec: appsv1.StatefulSetSpec{
@@ -401,7 +401,7 @@ func TestBuildStatefulSet_ConfiguresUpdateStrategyCorrectly(t *testing.T) {
 
 		mdb.Spec.Version = "4.0.0"
 
-		prevSpec := mdbv1.MongoDBCommunitySpec{
+		prevSpec := mdbv1.ADMongoDBCommunitySpec{
 			Version: "4.2.0",
 		}
 
@@ -670,7 +670,7 @@ func TestService_changesMongodPortOnRunningClusterWithArbiters(t *testing.T) {
 }
 
 // assertConnectionStringSecretPorts checks that connection string secret has expectedPort and does not have notExpectedPort.
-func assertConnectionStringSecretPorts(t *testing.T, c k8sClient.Client, mdb mdbv1.MongoDBCommunity, expectedPort int, notExpectedPort int) {
+func assertConnectionStringSecretPorts(t *testing.T, c k8sClient.Client, mdb mdbv1.ADMongoDBCommunity, expectedPort int, notExpectedPort int) {
 	connectionStringSecret := corev1.Secret{}
 	scramUsers := mdb.GetAuthUsers()
 	require.Len(t, scramUsers, 1)
@@ -682,7 +682,7 @@ func assertConnectionStringSecretPorts(t *testing.T, c k8sClient.Client, mdb mdb
 	assert.NotContains(t, string(connectionStringSecret.Data["connectionString.standard"]), fmt.Sprintf("%d", notExpectedPort))
 }
 
-func assertServicePorts(t *testing.T, c k8sClient.Client, mdb mdbv1.MongoDBCommunity, expectedServicePorts map[int]string) {
+func assertServicePorts(t *testing.T, c k8sClient.Client, mdb mdbv1.ADMongoDBCommunity, expectedServicePorts map[int]string) {
 	svc := corev1.Service{}
 
 	err := c.Get(context.TODO(), types.NamespacedName{Name: mdb.ServiceName(), Namespace: mdb.Namespace}, &svc)
@@ -699,7 +699,7 @@ func assertServicePorts(t *testing.T, c k8sClient.Client, mdb mdbv1.MongoDBCommu
 	assert.Equal(t, expectedServicePorts, actualServicePorts)
 }
 
-func assertAutomationConfigVersion(t *testing.T, c client.Client, mdb mdbv1.MongoDBCommunity, expectedVersion int) automationconfig.AutomationConfig {
+func assertAutomationConfigVersion(t *testing.T, c client.Client, mdb mdbv1.ADMongoDBCommunity, expectedVersion int) automationconfig.AutomationConfig {
 	ac, err := automationconfig.ReadFromSecret(c, types.NamespacedName{Name: mdb.AutomationConfigSecretName(), Namespace: mdb.Namespace})
 	require.NoError(t, err)
 	assert.Equal(t, expectedVersion, ac.Version)
@@ -1075,9 +1075,9 @@ func TestAnnotationsAreAppliedToResource(t *testing.T) {
 	assert.Equal(t, mdb.Annotations[lastAppliedMongoDBVersion], mdb.Spec.Version, "last version should have been saved as an annotation but was not")
 }
 
-// assertAuthoritativeSet asserts that a reconciliation of the given MongoDBCommunity resource
+// assertAuthoritativeSet asserts that a reconciliation of the given ADMongoDBCommunity resource
 // results in the AuthoritativeSet of the created AutomationConfig to have the expectedValue provided.
-func assertAuthoritativeSet(t *testing.T, mdb mdbv1.MongoDBCommunity, expectedValue bool) {
+func assertAuthoritativeSet(t *testing.T, mdb mdbv1.ADMongoDBCommunity, expectedValue bool) {
 	mgr := client.NewManager(&mdb)
 	r := NewReconciler(mgr)
 	res, err := r.Reconcile(context.TODO(), reconcile.Request{NamespacedName: types.NamespacedName{Namespace: mdb.Namespace, Name: mdb.Name}})
@@ -1093,7 +1093,7 @@ func assertAuthoritativeSet(t *testing.T, mdb mdbv1.MongoDBCommunity, expectedVa
 	assert.Equal(t, expectedValue, ac.Auth.AuthoritativeSet)
 }
 
-func assertReplicaSetIsConfiguredWithScram(t *testing.T, mdb mdbv1.MongoDBCommunity) {
+func assertReplicaSetIsConfiguredWithScram(t *testing.T, mdb mdbv1.ADMongoDBCommunity) {
 	mgr := client.NewManager(&mdb)
 	r := NewReconciler(mgr)
 	res, err := r.Reconcile(context.TODO(), reconcile.Request{NamespacedName: types.NamespacedName{Namespace: mdb.Namespace, Name: mdb.Name}})
@@ -1122,7 +1122,7 @@ func assertReplicaSetIsConfiguredWithScram(t *testing.T, mdb mdbv1.MongoDBCommun
 	})
 }
 
-func assertReplicaSetIsConfiguredWithScramTLS(t *testing.T, mdb mdbv1.MongoDBCommunity) {
+func assertReplicaSetIsConfiguredWithScramTLS(t *testing.T, mdb mdbv1.ADMongoDBCommunity) {
 	mgr := client.NewManager(&mdb)
 	newClient := client.NewClient(mgr.GetClient())
 	err := createTLSSecret(newClient, mdb, "CERT", "KEY", "")
@@ -1157,7 +1157,7 @@ func assertReplicaSetIsConfiguredWithScramTLS(t *testing.T, mdb mdbv1.MongoDBCom
 	})
 }
 
-func assertReplicaSetIsConfiguredWithX509(t *testing.T, mdb mdbv1.MongoDBCommunity) {
+func assertReplicaSetIsConfiguredWithX509(t *testing.T, mdb mdbv1.ADMongoDBCommunity) {
 	mgr := client.NewManager(&mdb)
 	newClient := client.NewClient(mgr.GetClient())
 	err := createTLSSecret(newClient, mdb, "CERT", "KEY", "")
@@ -1364,7 +1364,7 @@ func performReconciliationAndGetService(t *testing.T, filePath string) (corev1.S
 	return svc, mgr.Client
 }
 
-func generatePasswordsForAllUsers(mdb mdbv1.MongoDBCommunity, c client.Client) error {
+func generatePasswordsForAllUsers(mdb mdbv1.ADMongoDBCommunity, c client.Client) error {
 	for _, user := range mdb.Spec.Users {
 
 		key := "password"
@@ -1394,11 +1394,11 @@ func assertReconciliationSuccessful(t *testing.T, result reconcile.Result, err e
 
 // makeStatefulSetReady updates the StatefulSet corresponding to the
 // provided MongoDB resource to mark it as ready for the case of `statefulset.IsReady`
-func makeStatefulSetReady(t *testing.T, c k8sClient.Client, mdb mdbv1.MongoDBCommunity) {
+func makeStatefulSetReady(t *testing.T, c k8sClient.Client, mdb mdbv1.ADMongoDBCommunity) {
 	setStatefulSetReadyReplicas(t, c, mdb, mdb.StatefulSetReplicasThisReconciliation())
 }
 
-func setStatefulSetReadyReplicas(t *testing.T, c k8sClient.Client, mdb mdbv1.MongoDBCommunity, readyReplicas int) {
+func setStatefulSetReadyReplicas(t *testing.T, c k8sClient.Client, mdb mdbv1.ADMongoDBCommunity, readyReplicas int) {
 	sts := appsv1.StatefulSet{}
 	err := c.Get(context.TODO(), mdb.NamespacedName(), &sts)
 	assert.NoError(t, err)
@@ -1408,7 +1408,7 @@ func setStatefulSetReadyReplicas(t *testing.T, c k8sClient.Client, mdb mdbv1.Mon
 	assert.NoError(t, err)
 }
 
-func setArbiterStatefulSetReadyReplicas(t *testing.T, c k8sClient.Client, mdb mdbv1.MongoDBCommunity, readyReplicas int) {
+func setArbiterStatefulSetReadyReplicas(t *testing.T, c k8sClient.Client, mdb mdbv1.ADMongoDBCommunity, readyReplicas int) {
 	sts := appsv1.StatefulSet{}
 	err := c.Get(context.TODO(), mdb.ArbiterNamespacedName(), &sts)
 	assert.NoError(t, err)
@@ -1419,9 +1419,9 @@ func setArbiterStatefulSetReadyReplicas(t *testing.T, c k8sClient.Client, mdb md
 }
 
 // loadTestFixture will create a MongoDB resource from a given fixture
-func loadTestFixture(yamlFileName string) (mdbv1.MongoDBCommunity, error) {
+func loadTestFixture(yamlFileName string) (mdbv1.ADMongoDBCommunity, error) {
 	testPath := fmt.Sprintf("testdata/%s", yamlFileName)
-	mdb := mdbv1.MongoDBCommunity{}
+	mdb := mdbv1.ADMongoDBCommunity{}
 	data, err := os.ReadFile(testPath)
 	if err != nil {
 		return mdb, fmt.Errorf("error reading file: %s", err)

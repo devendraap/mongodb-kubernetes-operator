@@ -45,7 +45,7 @@ func TlsTestDataDir() string {
 
 // UpdateMongoDBResource applies the provided function to the most recent version of the MongoDB resource
 // and retries when there are conflicts
-func UpdateMongoDBResource(original *mdbv1.MongoDBCommunity, updateFunc func(*mdbv1.MongoDBCommunity)) error {
+func UpdateMongoDBResource(original *mdbv1.ADMongoDBCommunity, updateFunc func(*mdbv1.ADMongoDBCommunity)) error {
 	err := TestClient.Get(context.TODO(), types.NamespacedName{Name: original.Name, Namespace: original.Namespace}, original)
 	if err != nil {
 		return err
@@ -56,18 +56,18 @@ func UpdateMongoDBResource(original *mdbv1.MongoDBCommunity, updateFunc func(*md
 	return TestClient.Update(context.TODO(), original)
 }
 
-func NewTestMongoDB(ctx *Context, name string, namespace string) (mdbv1.MongoDBCommunity, mdbv1.MongoDBUser) {
+func NewTestMongoDB(ctx *Context, name string, namespace string) (mdbv1.ADMongoDBCommunity, mdbv1.MongoDBUser) {
 	mongodbNamespace := namespace
 	if mongodbNamespace == "" {
 		mongodbNamespace = OperatorNamespace
 	}
-	mdb := mdbv1.MongoDBCommunity{
+	mdb := mdbv1.ADMongoDBCommunity{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      name,
 			Namespace: mongodbNamespace,
 			Labels:    TestLabels(),
 		},
-		Spec: mdbv1.MongoDBCommunitySpec{
+		Spec: mdbv1.ADMongoDBCommunitySpec{
 			Members:  3,
 			Type:     "ReplicaSet",
 			Version:  "7.0.2",

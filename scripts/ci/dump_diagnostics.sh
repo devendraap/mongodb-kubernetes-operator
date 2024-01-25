@@ -42,11 +42,11 @@ for pod_name in $(kubectl get pod -n "${namespace}" --output=jsonpath={.items..m
   done
 done
 
-# dump information about MongoDBCommunity resources and statefulsets.
+# dump information about ADMongoDBCommunity resources and statefulsets.
 for mdbc_name in $(kubectl get mongodbcommunity -n "${namespace}" --output=jsonpath={.items..metadata.name}); do
-    echo "Writing MongoDBCommunity describe"
+    echo "Writing ADMongoDBCommunity describe"
     kubectl describe mongodbcommunity "${mdbc_name}" -n "${namespace}" > "diagnostics/${mdbc_name}-mongodbcommunity.txt"
-    echo "Writing yaml output for MongoDBCommunity ${mdbc_name}"
+    echo "Writing yaml output for ADMongoDBCommunity ${mdbc_name}"
     kubectl get mongodbcommunity "${mdbc_name}" -n "${namespace}" -o yaml > "diagnostics/${mdbc_name}-mongodbcommunity.yaml"
     echo "Writing describe output for StatefulSet ${mdbc_name}"
     kubectl describe sts "${mdbc_name}" -n "${namespace}" > "diagnostics/${mdbc_name}-statefulset.txt"

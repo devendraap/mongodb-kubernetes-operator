@@ -35,7 +35,7 @@ const (
 )
 
 // validateTLSConfig will check that the configured ConfigMap and Secret exist and that they have the correct fields.
-func (r *ReplicaSetReconciler) validateTLSConfig(mdb mdbv1.MongoDBCommunity) (bool, error) {
+func (r *ReplicaSetReconciler) validateTLSConfig(mdb mdbv1.ADMongoDBCommunity) (bool, error) {
 	if !mdb.Spec.Security.TLS.Enabled {
 		return true, nil
 	}
@@ -89,7 +89,7 @@ func (r *ReplicaSetReconciler) validateTLSConfig(mdb mdbv1.MongoDBCommunity) (bo
 
 // getTLSConfigModification creates a modification function which enables TLS in the automation config.
 // It will also ensure that the combined cert-key secret is created.
-func getTLSConfigModification(cmGetter configmap.Getter, secretGetter secret.Getter, mdb mdbv1.MongoDBCommunity) (automationconfig.Modification, error) {
+func getTLSConfigModification(cmGetter configmap.Getter, secretGetter secret.Getter, mdb mdbv1.ADMongoDBCommunity) (automationconfig.Modification, error) {
 	if !mdb.Spec.Security.TLS.Enabled {
 		return automationconfig.NOOP(), nil
 	}
@@ -108,7 +108,7 @@ func getTLSConfigModification(cmGetter configmap.Getter, secretGetter secret.Get
 }
 
 // getCertAndKey will fetch the certificate and key from the user-provided Secret.
-func getCertAndKey(getter secret.Getter, mdb mdbv1.MongoDBCommunity, secretName types.NamespacedName) string {
+func getCertAndKey(getter secret.Getter, mdb mdbv1.ADMongoDBCommunity, secretName types.NamespacedName) string {
 	cert, err := secret.ReadKey(getter, tlsSecretCertName, secretName)
 	if err != nil {
 		return ""
@@ -123,7 +123,7 @@ func getCertAndKey(getter secret.Getter, mdb mdbv1.MongoDBCommunity, secretName 
 }
 
 // getPem will fetch the pem from the user-provided secret
-func getPem(getter secret.Getter, mdb mdbv1.MongoDBCommunity, secretName types.NamespacedName) string {
+func getPem(getter secret.Getter, mdb mdbv1.ADMongoDBCommunity, secretName types.NamespacedName) string {
 	pem, err := secret.ReadKey(getter, tlsSecretPemName, secretName)
 	if err != nil {
 		return ""
@@ -141,7 +141,7 @@ func combineCertificateAndKey(cert, key string) string {
 // This is either the tls.pem entry in the given secret, or the concatenation
 // of tls.crt and tls.key
 // It performs a basic validation on the entries.
-func getPemOrConcatenatedCrtAndKey(getter secret.Getter, mdb mdbv1.MongoDBCommunity, secretName types.NamespacedName) (string, error) {
+func getPemOrConcatenatedCrtAndKey(getter secret.Getter, mdb mdbv1.ADMongoDBCommunity, secretName types.NamespacedName) (string, error) {
 	certKey := getCertAndKey(getter, mdb, secretName)
 	pem := getPem(getter, mdb, secretName)
 	if certKey == "" && pem == "" {
@@ -159,7 +159,7 @@ func getPemOrConcatenatedCrtAndKey(getter secret.Getter, mdb mdbv1.MongoDBCommun
 	return certKey, nil
 }
 
-func getCaCrt(cmGetter configmap.Getter, secretGetter secret.Getter, mdb mdbv1.MongoDBCommunity) (string, error) {
+func getCaCrt(cmGetter configmap.Getter, secretGetter secret.Getter, mdb mdbv1.ADMongoDBCommunity) (string, error) {
 	var caResourceName types.NamespacedName
 	var caData map[string]string
 	var err error
@@ -188,7 +188,7 @@ func getCaCrt(cmGetter configmap.Getter, secretGetter secret.Getter, mdb mdbv1.M
 
 // ensureCASecret will create or update the operator managed Secret containing
 // the CA certficate from the user provided Secret or ConfigMap.
-func ensureCASecret(cmGetter configmap.Getter, secretGetter secret.Getter, getUpdateCreator secret.GetUpdateCreator, mdb mdbv1.MongoDBCommunity) error {
+func ensureCASecret(cmGetter configmap.Getter, secretGetter secret.Getter, getUpdateCreator secret.GetUpdateCreator, mdb mdbv1.ADMongoDBCommunity) error {
 	cert, err := getCaCrt(cmGetter, secretGetter, mdb)
 	if err != nil {
 		return err
@@ -208,7 +208,7 @@ func ensureCASecret(cmGetter configmap.Getter, secretGetter secret.Getter, getUp
 
 // ensureTLSSecret will create or update the operator-managed Secret containing
 // the concatenated certificate and key from the user-provided Secret.
-func ensureTLSSecret(getUpdateCreator secret.GetUpdateCreator, mdb mdbv1.MongoDBCommunity) error {
+func ensureTLSSecret(getUpdateCreator secret.GetUpdateCreator, mdb mdbv1.ADMongoDBCommunity) error {
 	certKey, err := getPemOrConcatenatedCrtAndKey(getUpdateCreator, mdb, mdb.TLSSecretNamespacedName())
 	if err != nil {
 		return err
@@ -226,7 +226,7 @@ func ensureTLSSecret(getUpdateCreator secret.GetUpdateCreator, mdb mdbv1.MongoDB
 	return secret.CreateOrUpdate(getUpdateCreator, operatorSecret)
 }
 
-func ensureAgentCertSecret(getUpdateCreator secret.GetUpdateCreator, mdb mdbv1.MongoDBCommunity) error {
+func ensureAgentCertSecret(getUpdateCreator secret.GetUpdateCreator, mdb mdbv1.ADMongoDBCommunity) error {
 	if mdb.Spec.GetAgentAuthMode() != "X509" {
 		return nil
 	}
@@ -248,7 +248,7 @@ func ensureAgentCertSecret(getUpdateCreator secret.GetUpdateCreator, mdb mdbv1.M
 
 // ensurePrometheusTLSSecret will create or update the operator-managed Secret containing
 // the concatenated certificate and key from the user-provided Secret.
-func ensurePrometheusTLSSecret(getUpdateCreator secret.GetUpdateCreator, mdb mdbv1.MongoDBCommunity) error {
+func ensurePrometheusTLSSecret(getUpdateCreator secret.GetUpdateCreator, mdb mdbv1.ADMongoDBCommunity) error {
 	certKey, err := getPemOrConcatenatedCrtAndKey(getUpdateCreator, mdb, mdb.DeepCopy().PrometheusTLSSecretNamespacedName())
 	if err != nil {
 		return err
@@ -278,7 +278,7 @@ func tlsOperatorSecretFileName(certKey string) string {
 }
 
 // tlsConfigModification will enable TLS in the automation config.
-func tlsConfigModification(mdb mdbv1.MongoDBCommunity, certKey, caCert string) automationconfig.Modification {
+func tlsConfigModification(mdb mdbv1.ADMongoDBCommunity, certKey, caCert string) automationconfig.Modification {
 	caCertificatePath := tlsCAMountPath + tlsOperatorSecretFileName(caCert)
 	certificateKeyPath := tlsOperatorSecretMountPath + tlsOperatorSecretFileName(certKey)
 
@@ -310,7 +310,7 @@ func tlsConfigModification(mdb mdbv1.MongoDBCommunity, certKey, caCert string) a
 }
 
 // buildTLSPodSpecModification will add the TLS init container and volumes to the pod template if TLS is enabled.
-func buildTLSPodSpecModification(mdb mdbv1.MongoDBCommunity) podtemplatespec.Modification {
+func buildTLSPodSpecModification(mdb mdbv1.ADMongoDBCommunity) podtemplatespec.Modification {
 	if !mdb.Spec.Security.TLS.Enabled {
 		return podtemplatespec.NOOP()
 	}
@@ -337,7 +337,7 @@ func buildTLSPodSpecModification(mdb mdbv1.MongoDBCommunity) podtemplatespec.Mod
 }
 
 // buildTLSPrometheus adds the TLS mounts for Prometheus.
-func buildTLSPrometheus(mdb mdbv1.MongoDBCommunity) podtemplatespec.Modification {
+func buildTLSPrometheus(mdb mdbv1.ADMongoDBCommunity) podtemplatespec.Modification {
 	if mdb.Spec.Prometheus == nil || mdb.Spec.Prometheus.TLSSecretRef.Name == "" {
 		return podtemplatespec.NOOP()
 	}
@@ -359,7 +359,7 @@ func buildTLSPrometheus(mdb mdbv1.MongoDBCommunity) podtemplatespec.Modification
 	)
 }
 
-func buildAgentX509(mdb mdbv1.MongoDBCommunity) podtemplatespec.Modification {
+func buildAgentX509(mdb mdbv1.ADMongoDBCommunity) podtemplatespec.Modification {
 	if mdb.Spec.GetAgentAuthMode() != "X509" {
 		return podtemplatespec.Apply(
 			podtemplatespec.RemoveVolume(constants.AgentPemFile),

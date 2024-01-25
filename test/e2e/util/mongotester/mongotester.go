@@ -31,10 +31,10 @@ import (
 type Tester struct {
 	mongoClient *mongo.Client
 	clientOpts  []*options.ClientOptions
-	resource    *mdbv1.MongoDBCommunity
+	resource    *mdbv1.ADMongoDBCommunity
 }
 
-func newTester(mdb *mdbv1.MongoDBCommunity, opts ...*options.ClientOptions) *Tester {
+func newTester(mdb *mdbv1.ADMongoDBCommunity, opts ...*options.ClientOptions) *Tester {
 	t := &Tester{
 		resource: mdb,
 	}
@@ -51,7 +51,7 @@ type OptionApplier interface {
 
 // FromResource returns a Tester instance from a MongoDB resource. It infers SCRAM username/password
 // and the hosts from the resource.
-func FromResource(t *testing.T, mdb mdbv1.MongoDBCommunity, opts ...OptionApplier) (*Tester, error) {
+func FromResource(t *testing.T, mdb mdbv1.ADMongoDBCommunity, opts ...OptionApplier) (*Tester, error) {
 	var clientOpts []*options.ClientOptions
 
 	clientOpts = WithHosts(mdb.Hosts("")).ApplyOption(clientOpts...)
@@ -78,7 +78,7 @@ func FromResource(t *testing.T, mdb mdbv1.MongoDBCommunity, opts ...OptionApplie
 	return newTester(&mdb, clientOpts...), nil
 }
 
-func FromX509Resource(t *testing.T, mdb mdbv1.MongoDBCommunity, opts ...OptionApplier) (*Tester, error) {
+func FromX509Resource(t *testing.T, mdb mdbv1.ADMongoDBCommunity, opts ...OptionApplier) (*Tester, error) {
 	var clientOpts []*options.ClientOptions
 
 	clientOpts = WithHosts(mdb.Hosts("")).ApplyOption(clientOpts...)
@@ -279,7 +279,7 @@ func (m *Tester) connectivityCheck(shouldSucceed bool, opts ...OptionApplier) fu
 	}
 }
 
-func (m *Tester) WaitForRotatedCertificate(mdb mdbv1.MongoDBCommunity, initialCertSerialNumber *big.Int) func(*testing.T) {
+func (m *Tester) WaitForRotatedCertificate(mdb mdbv1.ADMongoDBCommunity, initialCertSerialNumber *big.Int) func(*testing.T) {
 	return func(t *testing.T) {
 		tls, err := getClientTLSConfig(mdb)
 		assert.NoError(t, err)
@@ -498,7 +498,7 @@ func WithHosts(hosts []string) OptionApplier {
 }
 
 // WithTls configures the client to use tls
-func WithTls(mdb mdbv1.MongoDBCommunity) OptionApplier {
+func WithTls(mdb mdbv1.ADMongoDBCommunity) OptionApplier {
 	tlsConfig, err := getClientTLSConfig(mdb)
 	if err != nil {
 		panic(fmt.Errorf("could not retrieve TLS config: %s", err))
@@ -541,7 +541,7 @@ func WithReplicaSet(rsname string) OptionApplier {
 }
 
 // getClientTLSConfig reads in the tls fixtures
-func getClientTLSConfig(mdb mdbv1.MongoDBCommunity) (*tls.Config, error) {
+func getClientTLSConfig(mdb mdbv1.ADMongoDBCommunity) (*tls.Config, error) {
 	caSecret := corev1.Secret{}
 	caSecretName := types.NamespacedName{Name: mdb.Spec.Security.TLS.CaCertificateSecret.Name, Namespace: mdb.Namespace}
 	if err := e2eutil.TestClient.Get(context.TODO(), caSecretName, &caSecret); err != nil {
@@ -557,7 +557,7 @@ func getClientTLSConfig(mdb mdbv1.MongoDBCommunity) (*tls.Config, error) {
 }
 
 // GetAgentCert reads the agent key certificate
-func GetAgentCert(mdb mdbv1.MongoDBCommunity) (*x509.Certificate, error) {
+func GetAgentCert(mdb mdbv1.ADMongoDBCommunity) (*x509.Certificate, error) {
 	certSecret := corev1.Secret{}
 	certSecretName := mdb.AgentCertificateSecretNamespacedName()
 	if err := e2eutil.TestClient.Get(context.TODO(), certSecretName, &certSecret); err != nil {
@@ -571,7 +571,7 @@ func GetAgentCert(mdb mdbv1.MongoDBCommunity) (*x509.Certificate, error) {
 }
 
 // GetClientCert reads the client key certificate
-func GetClientCert(mdb mdbv1.MongoDBCommunity) (*x509.Certificate, error) {
+func GetClientCert(mdb mdbv1.ADMongoDBCommunity) (*x509.Certificate, error) {
 	certSecret := corev1.Secret{}
 	certSecretName := types.NamespacedName{Name: mdb.Spec.Security.TLS.CertificateKeySecret.Name, Namespace: mdb.Namespace}
 	if err := e2eutil.TestClient.Get(context.TODO(), certSecretName, &certSecret); err != nil {
@@ -584,7 +584,7 @@ func GetClientCert(mdb mdbv1.MongoDBCommunity) (*x509.Certificate, error) {
 	return x509.ParseCertificate(block.Bytes)
 }
 
-func GetUserCert(mdb mdbv1.MongoDBCommunity, userCertSecret string) (string, error) {
+func GetUserCert(mdb mdbv1.ADMongoDBCommunity, userCertSecret string) (string, error) {
 	certSecret := corev1.Secret{}
 	certSecretName := types.NamespacedName{Name: userCertSecret, Namespace: mdb.Namespace}
 	if err := e2eutil.TestClient.Get(context.TODO(), certSecretName, &certSecret); err != nil {

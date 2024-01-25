@@ -18,9 +18,9 @@ import (
 )
 
 // EnableTLS will upgrade an existing TLS cluster to use TLS.
-func EnableTLS(mdb *mdbv1.MongoDBCommunity, optional bool) func(*testing.T) {
+func EnableTLS(mdb *mdbv1.ADMongoDBCommunity, optional bool) func(*testing.T) {
 	return func(t *testing.T) {
-		err := e2eutil.UpdateMongoDBResource(mdb, func(db *mdbv1.MongoDBCommunity) {
+		err := e2eutil.UpdateMongoDBResource(mdb, func(db *mdbv1.ADMongoDBCommunity) {
 			db.Spec.Security.TLS = e2eutil.NewTestTLSConfig(optional)
 		})
 		if err != nil {
@@ -29,7 +29,7 @@ func EnableTLS(mdb *mdbv1.MongoDBCommunity, optional bool) func(*testing.T) {
 	}
 }
 
-func ExtendCACertificate(mdb *mdbv1.MongoDBCommunity) func(*testing.T) {
+func ExtendCACertificate(mdb *mdbv1.ADMongoDBCommunity) func(*testing.T) {
 	return func(t *testing.T) {
 		certGVR := schema.GroupVersionResource{
 			Group:    "cert-manager.io",
@@ -61,21 +61,21 @@ func ExtendCACertificate(mdb *mdbv1.MongoDBCommunity) func(*testing.T) {
 	}
 }
 
-func RotateCertificate(mdb *mdbv1.MongoDBCommunity) func(*testing.T) {
+func RotateCertificate(mdb *mdbv1.ADMongoDBCommunity) func(*testing.T) {
 	return func(t *testing.T) {
 		certKeySecretName := mdb.TLSSecretNamespacedName()
 		rotateCertManagerSecret(certKeySecretName, t)
 	}
 }
 
-func RotateAgentCertificate(mdb *mdbv1.MongoDBCommunity) func(*testing.T) {
+func RotateAgentCertificate(mdb *mdbv1.ADMongoDBCommunity) func(*testing.T) {
 	return func(t *testing.T) {
 		agentCertSecretName := mdb.AgentCertificateSecretNamespacedName()
 		rotateCertManagerSecret(agentCertSecretName, t)
 	}
 }
 
-func RotateCACertificate(mdb *mdbv1.MongoDBCommunity) func(*testing.T) {
+func RotateCACertificate(mdb *mdbv1.ADMongoDBCommunity) func(*testing.T) {
 	return func(t *testing.T) {
 		caCertSecretName := mdb.TLSCaCertificateSecretNamespacedName()
 		rotateCertManagerSecret(caCertSecretName, t)

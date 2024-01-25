@@ -63,7 +63,7 @@ func withSha1() func(*authOptions) {
 }
 
 // testConfigAuthentication run the tests using the auth options to update mdb and then checks that the resources are correctly configured
-func testConfigAuthentication(mdb mdbv1.MongoDBCommunity, user mdbv1.MongoDBUser, pw string, allOptions ...func(*authOptions)) func(t *testing.T) {
+func testConfigAuthentication(mdb mdbv1.ADMongoDBCommunity, user mdbv1.MongoDBUser, pw string, allOptions ...func(*authOptions)) func(t *testing.T) {
 	return func(t *testing.T) {
 
 		pickedOpts := authOptions{
@@ -92,7 +92,7 @@ func testConfigAuthentication(mdb mdbv1.MongoDBCommunity, user mdbv1.MongoDBUser
 			}
 		}
 
-		err := e2eutil.UpdateMongoDBResource(&mdb, func(db *mdbv1.MongoDBCommunity) {
+		err := e2eutil.UpdateMongoDBResource(&mdb, func(db *mdbv1.ADMongoDBCommunity) {
 			db.Spec.Security.Authentication.Modes = acceptedModes
 		})
 		if err != nil {

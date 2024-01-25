@@ -8,12 +8,12 @@ Resizing the [Persistent Volume Claim (PVC)](https://kubernetes.io/docs/concepts
    kubectl patch storageclass/<my-storageclass> --type='json' -p='[{"op": "add", "path": "/allowVolumeExpansion", "value": true }]'
    ```
 
-1. If you don't already have a `MongoDBCommunity` resource with custom storage specified, create one. For example:
+1. If you don't already have a `ADMongoDBCommunity` resource with custom storage specified, create one. For example:
 
    ```yaml
    ---
-   apiVersion: mongodbcommunity.mongodb.com/v1
-   kind: MongoDBCommunity
+   apiVersion: admongodbcommunity.mongodb.com/v1
+   kind: ADADMongoDBCommunity
    metadata:
      name: example-mongodb
    spec:
@@ -52,7 +52,7 @@ Resizing the [Persistent Volume Claim (PVC)](https://kubernetes.io/docs/concepts
    kubectl delete sts --cascade=orphan <my-replica-set>
    ```
 
-1. Remove the `MongoDBCommunity` resource without removing the Pods.
+1. Remove the `ADMongoDBCommunity` resource without removing the Pods.
 
    ```
    kubectl delete mdbc --cascade=orphan <my-replica-set>
@@ -64,12 +64,12 @@ Resizing the [Persistent Volume Claim (PVC)](https://kubernetes.io/docs/concepts
    kubectl scale deploy mongodb-kubernetes-operator --replicas=1
    ```
 
-1. Add your new storage specifications to the `MongoDBCommunity` resource. For example:
+1. Add your new storage specifications to the `ADMongoDBCommunity` resource. For example:
 
    ```yaml
    ---
-   apiVersion: mongodbcommunity.mongodb.com/v1
-   kind: MongoDBCommunity
+   apiVersion: admongodbcommunity.mongodb.com/v1
+   kind: ADADMongoDBCommunity
    metadata:
      name: example-mongodb
    spec:
@@ -88,10 +88,10 @@ Resizing the [Persistent Volume Claim (PVC)](https://kubernetes.io/docs/concepts
    ...
    ```
 
-1. Reapply the `MongoDBCommunity` resource. For example:
+1. Reapply the `ADMongoDBCommunity` resource. For example:
 
    ```
-   kubectl apply -f PATH/TO/<MongoDBCommunity-resource>.yaml
+   kubectl apply -f PATH/TO/<ADMongoDBCommunity-resource>.yaml
    ```
 
 1. If your storage provisioner doesn't support online expansion, restart the Pods.

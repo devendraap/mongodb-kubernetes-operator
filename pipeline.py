@@ -44,6 +44,11 @@ def build_image_args(config: DevConfig, image_name: str) -> Dict[str, str]:
         "inventory": "inventory.yaml",
         "skip_tags": config.skip_tags,  # Include skip_tags
         "include_tags": config.include_tags,  # Include include_tags
+        "annotations": {
+            "org.opencontainers.image.source": "https://github.com/octocat/my-repo",
+            "org.opencontainers.image.description": "My container image",
+            "org.opencontainers.image.licenses": "MIT"
+        }
     }
 
     # Handle special cases
@@ -115,9 +120,10 @@ def push_manifest(
     image_name: str,
     image_tag: str = "latest",
 ):
+
     print(f"Pushing manifest for {image_tag}")
     final_manifest = "{0}/{1}:{2}".format(config.repo_url, image_name, image_tag)
-    remove_args = ["docker", "manifest", "rm", final_manifest]
+    remove_args = ["docker", "manifest", "rm", "--insecure", final_manifest]
     print("Removing existing manifest")
     run_cli_command(remove_args, fail_on_error=False)
 
@@ -125,6 +131,7 @@ def push_manifest(
         "docker",
         "manifest",
         "create",
+        "--insecure",
         final_manifest,
     ]
 
@@ -133,7 +140,7 @@ def push_manifest(
 
     print("Creating new manifest")
     run_cli_command(create_args)
-
+    # final_manifest = final_manifest.replace("443", "80") 
     push_args = ["docker", "manifest", "push", final_manifest]
     print("Pushing new manifest")
     run_cli_command(push_args)

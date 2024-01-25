@@ -1,13 +1,13 @@
-# Deploy and Configure a MongoDBCommunity Resource #
+# Deploy and Configure a ADMongoDBCommunity Resource #
 
-The [`/config/samples`](../config/samples) directory contains example MongoDBCommunity resources that you can modify and deploy.
+The [`/config/samples`](../config/samples) directory contains example ADMongoDBCommunity resources that you can modify and deploy.
 
 ## Table of Contents
 
 - [Deploy a Replica Set](#deploy-a-replica-set)
 - [Scale a Replica Set](#scale-a-replica-set)
 - [Add Arbiters to a Replica Set](#add-arbiters-to-a-replica-set)
-- [Upgrade your MongoDBCommunity Resource Version and Feature Compatibility Version](#upgrade-your-mongodbcommunity-resource-version-and-feature-compatibility-version)
+- [Upgrade your ADMongoDBCommunity Resource Version and Feature Compatibility Version](#upgrade-your-mongodbcommunity-resource-version-and-feature-compatibility-version)
   - [Example](#example)
 - [Deploy Replica Sets on OpenShift](#deploy-replica-sets-on-openshift)
 - [Define a Custom Database Role](#define-a-custom-database-role)
@@ -29,7 +29,7 @@ To deploy your first replica set:
    ```
    kubectl apply -f config/samples/mongodb.com_v1_mongodbcommunity_cr.yaml --namespace <my-namespace>
    ```
-3. Verify that the MongoDBCommunity resource deployed:
+3. Verify that the ADMongoDBCommunity resource deployed:
    ```
    kubectl get mongodbcommunity --namespace <my-namespace>
    ```
@@ -46,7 +46,7 @@ To deploy your first replica set:
 
    **NOTE**: Alternatively, you can specify an optional
    `users[i].connectionStringSecretName` field in the
-   ``MongoDBCommunity`` custom resource to specify
+   ``ADMongoDBCommunity`` custom resource to specify
    the name of the connection string secret that the
    Community Kubernetes Operator creates.
 
@@ -70,7 +70,7 @@ To deploy your first replica set:
    }
    ```
 
-   **NOTE**: The Community Kubernetes Operator sets the [`ssl` connection option](https://www.mongodb.com/docs/manual/reference/connection-string/#connection-options) to `true` if you [Secure MongoDBCommunity Resource Connections using TLS](secure.md#secure-mongodbcommunity-resource-connections-using-tls).</br></br>
+   **NOTE**: The Community Kubernetes Operator sets the [`ssl` connection option](https://www.mongodb.com/docs/manual/reference/connection-string/#connection-options) to `true` if you [Secure ADMongoDBCommunity Resource Connections using TLS](secure.md#secure-mongodbcommunity-resource-connections-using-tls).</br></br>
 
    You can use the connection strings in this secret in your application:
 
@@ -109,11 +109,11 @@ To deploy your first replica set:
 You can scale up (increase) or scale down (decrease) the number of
 members in a replica set.
 
-Consider the following example MongoDBCommunity resource definition:
+Consider the following example ADMongoDBCommunity resource definition:
 
 ```yaml
-apiVersion: mongodbcommunity.mongodb.com/v1
-kind: MongoDBCommunity
+apiVersion: admongodbcommunity.mongodb.com/v1
+kind: ADADMongoDBCommunity
 metadata:
   name: example-mongodb
 spec:
@@ -129,8 +129,8 @@ To scale a replica set:
    Update `members` to the number of members that you want the replica set to have.
 
    ```yaml
-   apiVersion: mongodbcommunity.mongodb.com/v1
-   kind: MongoDBCommunity
+   apiVersion: admongodbcommunity.mongodb.com/v1
+   kind: ADADMongoDBCommunity
    metadata:
      name: example-mongodb
    spec:
@@ -144,14 +144,14 @@ To scale a replica set:
    kubectl apply -f <example>.yaml --namespace <my-namespace>
    ```
 
-   **NOTE**: When you scale down a MongoDBCommunity resource, the Community Operator
+   **NOTE**: When you scale down a ADMongoDBCommunity resource, the Community Operator
    might take several minutes to remove the StatefulSet replicas for the
    members that you remove from the replica set.
 
 ## Add Arbiters to a Replica Set
 
 To add [arbiters](https://www.mongodb.com/docs/manual/core/replica-set-arbiter/) to
-your replica set, add the `spec.arbiters` field to your MongoDBCommunity
+your replica set, add the `spec.arbiters` field to your ADMongoDBCommunity
 resource definition. This attribute configures the absolute amount of arbiters
 in this Replica Set, this is, the amount of `mongod` instances will be
 `spec.members` + `spec.arbiters`.
@@ -163,12 +163,12 @@ The value of the `spec.arbiters` field must be:
 
 **NOTE**: At least one replica set member must not be an arbiter.
 
-Consider the following MongoDBCommunity resource definition example, with a PSS
+Consider the following ADMongoDBCommunity resource definition example, with a PSS
 (Primary-Secondary-Secondary) configuration:
 
 ```yaml
-apiVersion: mongodbcommunity.mongodb.com/v1
-kind: MongoDBCommunity
+apiVersion: admongodbcommunity.mongodb.com/v1
+kind: ADADMongoDBCommunity
 metadata:
   name: example-mongodb
 spec:
@@ -184,8 +184,8 @@ To add arbiters:
    Add the `spec.arbiters` field and assign its value to the number of arbiters that you want the replica set to have.
 
    ```yaml
-   apiVersion: mongodbcommunity.mongodb.com/v1
-   kind: MongoDBCommunity
+   apiVersion: admongodbcommunity.mongodb.com/v1
+   kind: ADADMongoDBCommunity
    metadata:
      name: example-mongodb
    spec:
@@ -203,9 +203,9 @@ To add arbiters:
 The resulting Replica Set has a PSSA (Primary-Secondary-Secondary-Arbiter)
 configuration.
 
-## Upgrade your MongoDBCommunity Resource Version and Feature Compatibility Version
+## Upgrade your ADMongoDBCommunity Resource Version and Feature Compatibility Version
 
-You can upgrade the major, minor, and/or feature compatibility versions of your MongoDBCommunity resource. These settings are configured in your resource definition YAML file.
+You can upgrade the major, minor, and/or feature compatibility versions of your ADMongoDBCommunity resource. These settings are configured in your resource definition YAML file.
 
 - To upgrade your resource's major and/or minor versions, set the `spec.version` setting to the desired MongoDB version. Make sure to specify a full image tag, such as `5.0.3`. Setting the `spec.version` to loosely-defined tags such as `5.0` is not currently supported.
 
@@ -215,11 +215,11 @@ If you update `spec.version` to a later version, consider setting `spec.featureC
 
 ### Example
 
-Consider the following example MongoDBCommunity resource definition:
+Consider the following example ADMongoDBCommunity resource definition:
 
 ```yaml
-apiVersion: mongodbcommunity.mongodb.com/v1
-kind: MongoDBCommunity
+apiVersion: admongodbcommunity.mongodb.com/v1
+kind: ADADMongoDBCommunity
 metadata:
   name: example-mongodb
 spec:
@@ -236,8 +236,8 @@ To upgrade this resource from `4.0.6` to `4.2.7`:
    b. Update `spec.featureCompatibilityVersion` to `4.0`.
 
    ```yaml
-   apiVersion: mongodbcommunity.mongodb.com/v1
-   kind: MongoDBCommunity
+   apiVersion: admongodbcommunity.mongodb.com/v1
+   kind: ADADMongoDBCommunity
    metadata:
      name: example-mongodb
    spec:
@@ -272,11 +272,11 @@ You can define [custom roles](https://www.mongodb.com/docs/manual/core/security-
 
 To define a custom role:
 
-1. Add the following fields to the MongoDBCommunity resource definition:
+1. Add the following fields to the ADMongoDBCommunity resource definition:
 
    | Key | Type | Description | Required? |
    |----|----|----|----|
-   | `spec.security.authentication.ignoreUnknownUsers` | boolean | Flag that indicates whether you can add users that don't exist in the `MongoDBCommunity` resource. If omitted, defaults to `true`. | No |
+   | `spec.security.authentication.ignoreUnknownUsers` | boolean | Flag that indicates whether you can add users that don't exist in the `ADMongoDBCommunity` resource. If omitted, defaults to `true`. | No |
    | `spec.security.roles` | array | Array that defines [custom roles](https://www.mongodb.com/docs/manual/core/security-user-defined-roles/) roles that give you fine-grained access control over your MongoDB deployment. | Yes |
    | `spec.security.roles.role` | string | Name of the custom role. | Yes |
    | `spec.security.roles.db` | string | Database in which you want to store the user-defined role. | Yes |
@@ -294,8 +294,8 @@ To define a custom role:
 
    ```yaml
    ---
-   apiVersion: mongodbcommunity.mongodb.com/v1
-   kind: MongoDBCommunity
+   apiVersion: admongodbcommunity.mongodb.com/v1
+   kind: ADADMongoDBCommunity
    metadata:
      name: custom-role-mongodb
    spec:
@@ -331,7 +331,7 @@ To define a custom role:
    ```
 
 2. Save the file.
-3. Apply the updated MongoDBCommunity resource definition:
+3. Apply the updated ADMongoDBCommunity resource definition:
 
    ```
    kubectl apply -f <mongodb-crd>.yaml --namespace <my-namespace>

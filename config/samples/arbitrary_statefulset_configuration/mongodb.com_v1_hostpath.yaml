@@ -1,6 +1,6 @@
 # This example deploys a 3 members ReplicaSet with HostPath volumes
-apiVersion: mongodbcommunity.mongodb.com/v1
-kind: MongoDBCommunity
+apiVersion: admongodbcommunity.mongodb.com/v1
+kind: ADADMongoDBCommunity
 metadata:
   name: mdb0
 spec:

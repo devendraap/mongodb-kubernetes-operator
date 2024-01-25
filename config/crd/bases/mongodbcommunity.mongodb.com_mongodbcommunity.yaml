@@ -15,8 +15,8 @@ metadata:
 spec:
   group: mongodbcommunity.mongodb.com
   names:
-    kind: MongoDBCommunity
-    listKind: MongoDBCommunityList
+    kind: ADMongoDBCommunity
+    listKind: ADMongoDBCommunityList
     plural: mongodbcommunity
     shortNames:
     - mdbc
@@ -35,7 +35,7 @@ spec:
     name: v1
     schema:
       openAPIV3Schema:
-        description: MongoDBCommunity is the Schema for the mongodbs API
+        description: ADMongoDBCommunity is the Schema for the mongodbs API
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -50,7 +50,7 @@ spec:
           metadata:
             type: object
           spec:
-            description: MongoDBCommunitySpec defines the desired state of MongoDB
+            description: ADMongoDBCommunitySpec defines the desired state of MongoDB
             properties:
               additionalConnectionStringConfig:
                 description: Additional options to be appended to the connection string.
@@ -565,7 +565,7 @@ spec:
             - users
             type: object
           status:
-            description: MongoDBCommunityStatus defines the observed state of MongoDB
+            description: ADMongoDBCommunityStatus defines the observed state of MongoDB
             properties:
               currentMongoDBArbiters:
                 type: integer

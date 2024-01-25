@@ -1,6 +1,6 @@
 # MongoDB Kubernetes Operator 0.9.0
 
-## MongoDBCommunity Resource
+## ADMongoDBCommunity Resource
 
 - Changes
   - Introduced support for [Mongodb7](https://www.mongodb.com/docs/manual/release-notes/7.0/)

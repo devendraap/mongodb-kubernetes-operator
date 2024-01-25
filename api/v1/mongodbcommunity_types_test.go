@@ -345,7 +345,7 @@ func TestGetConnectionStringSecretName(t *testing.T) {
 	}
 }
 
-func TestMongoDBCommunity_MongoAuthUserURI(t *testing.T) {
+func TestADMongoDBCommunity_MongoAuthUserURI(t *testing.T) {
 	testuser := authtypes.User{
 		Username: "testuser",
 		Database: "admin",
@@ -404,7 +404,7 @@ func TestMongoDBCommunity_MongoAuthUserURI(t *testing.T) {
 	assert.Equal(t, mdb.MongoAuthUserURI(testuser, "", ""), "mongodb://my-rs-0.my-rs-svc.my-namespace.svc.cluster.local:27017,my-rs-1.my-rs-svc.my-namespace.svc.cluster.local:27017/$external?replicaSet=my-rs&ssl=false")
 }
 
-func TestMongoDBCommunity_MongoAuthUserSRVURI(t *testing.T) {
+func TestADMongoDBCommunity_MongoAuthUserSRVURI(t *testing.T) {
 	testuser := authtypes.User{
 		Username: "testuser",
 		Database: "admin",
@@ -471,7 +471,7 @@ func TestConvertAuthModeToAuthMechanism(t *testing.T) {
 	assert.Equal(t, "", ConvertAuthModeToAuthMechanism("LDAP"))
 }
 
-func TestMongoDBCommunity_GetAuthOptions(t *testing.T) {
+func TestADMongoDBCommunity_GetAuthOptions(t *testing.T) {
 	mdb := newReplicaSet(3, "mdb", "mongodb")
 	mdb.Spec.Security.Authentication.Modes = []AuthMode{"SCRAM", "X509"}
 
@@ -489,7 +489,7 @@ func TestMongoDBCommunity_GetAuthOptions(t *testing.T) {
 	assert.Equal(t, []string{constants.X509}, opts.AuthMechanisms)
 }
 
-func TestMongoDBCommunity_GetAuthUsers(t *testing.T) {
+func TestADMongoDBCommunity_GetAuthUsers(t *testing.T) {
 	mdb := newReplicaSet(3, "mdb", "mongodb")
 	mdb.Spec.Users = []MongoDBUser{
 		{
@@ -554,27 +554,27 @@ func TestMongoDBCommunity_GetAuthUsers(t *testing.T) {
 	}, authUsers[1])
 }
 
-func newReplicaSet(members int, name, namespace string) MongoDBCommunity {
-	return MongoDBCommunity{
+func newReplicaSet(members int, name, namespace string) ADMongoDBCommunity {
+	return ADMongoDBCommunity{
 		TypeMeta: metav1.TypeMeta{},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      name,
 			Namespace: namespace,
 		},
-		Spec: MongoDBCommunitySpec{
+		Spec: ADMongoDBCommunitySpec{
 			Members: members,
 		},
 	}
 }
 
-func newModesArray(modes []AuthMode, name, namespace string) MongoDBCommunity {
-	return MongoDBCommunity{
+func newModesArray(modes []AuthMode, name, namespace string) ADMongoDBCommunity {
+	return ADMongoDBCommunity{
 		TypeMeta: metav1.TypeMeta{},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      name,
 			Namespace: namespace,
 		},
-		Spec: MongoDBCommunitySpec{
+		Spec: ADMongoDBCommunitySpec{
 			Security: Security{
 				Authentication: Authentication{
 					Modes:              modes,
@@ -585,7 +585,7 @@ func newModesArray(modes []AuthMode, name, namespace string) MongoDBCommunity {
 	}
 }
 
-func TestMongoDBCommunitySpec_GetAgentCertificateRef(t *testing.T) {
+func TestADMongoDBCommunitySpec_GetAgentCertificateRef(t *testing.T) {
 	m := newReplicaSet(3, "mdb", "mdb")
 
 	assert.Equal(t, "agent-certs", m.Spec.GetAgentCertificateRef())
@@ -595,7 +595,7 @@ func TestMongoDBCommunitySpec_GetAgentCertificateRef(t *testing.T) {
 	assert.Equal(t, "my-agent-certificate", m.Spec.GetAgentCertificateRef())
 }
 
-func TestMongoDBCommunity_AgentCertificateSecretNamespacedName(t *testing.T) {
+func TestADMongoDBCommunity_AgentCertificateSecretNamespacedName(t *testing.T) {
 	m := newReplicaSet(3, "mdb", "mdb")
 
 	assert.Equal(t, "agent-certs", m.AgentCertificateSecretNamespacedName().Name)
@@ -605,7 +605,7 @@ func TestMongoDBCommunity_AgentCertificateSecretNamespacedName(t *testing.T) {
 	assert.Equal(t, "agent-certs-custom", m.AgentCertificateSecretNamespacedName().Name)
 }
 
-func TestMongoDBCommunity_AgentCertificatePemSecretNamespacedName(t *testing.T) {
+func TestADMongoDBCommunity_AgentCertificatePemSecretNamespacedName(t *testing.T) {
 	m := newReplicaSet(3, "mdb", "mdb")
 
 	assert.Equal(t, "agent-certs-pem", m.AgentCertificatePemSecretNamespacedName().Name)
@@ -616,7 +616,7 @@ func TestMongoDBCommunity_AgentCertificatePemSecretNamespacedName(t *testing.T) 
 
 }
 
-func TestMongoDBCommunitySpec_GetAgentAuthMode(t *testing.T) {
+func TestADMongoDBCommunitySpec_GetAgentAuthMode(t *testing.T) {
 	type fields struct {
 		agentAuth AuthMode
 		modes     []AuthMode

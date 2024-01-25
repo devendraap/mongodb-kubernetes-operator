@@ -28,14 +28,14 @@ func TestWatcher(t *testing.T) {
 	}
 	objNsName := types.NamespacedName{Name: obj.Name, Namespace: obj.Namespace}
 
-	mdb1 := mdbv1.MongoDBCommunity{
+	mdb1 := mdbv1.ADMongoDBCommunity{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "mdb1",
 			Namespace: "namespace",
 		},
 	}
 
-	mdb2 := mdbv1.MongoDBCommunity{
+	mdb2 := mdbv1.ADMongoDBCommunity{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "mdb2",
 			Namespace: "namespace",
@@ -124,13 +124,13 @@ func TestWatcherAdd(t *testing.T) {
 
 	watchedName := types.NamespacedName{Name: "object", Namespace: "namespace"}
 
-	mdb1 := mdbv1.MongoDBCommunity{
+	mdb1 := mdbv1.ADMongoDBCommunity{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "mdb1",
 			Namespace: "namespace",
 		},
 	}
-	mdb2 := mdbv1.MongoDBCommunity{
+	mdb2 := mdbv1.ADMongoDBCommunity{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "mdb2",
 			Namespace: "namespace",

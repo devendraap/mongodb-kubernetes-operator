@@ -1,12 +1,13 @@
 package controllers
 
 import (
+	"testing"
+
 	mdbv1 "github.com/mongodb/mongodb-kubernetes-operator/api/v1"
 	kubeClient "github.com/mongodb/mongodb-kubernetes-operator/pkg/kube/client"
 	"github.com/stretchr/testify/assert"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"testing"
 )
 
 func TestReplicaSetReconcilerCleanupScramSecrets(t *testing.T) {
@@ -98,20 +99,20 @@ func TestReplicaSetReconcilerCleanupScramSecrets(t *testing.T) {
 
 }
 func TestReplicaSetReconcilerCleanupPemSecret(t *testing.T) {
-	lastAppliedSpec := mdbv1.MongoDBCommunitySpec{
+	lastAppliedSpec := mdbv1.ADMongoDBCommunitySpec{
 		Security: mdbv1.Security{
 			Authentication: mdbv1.Authentication{
 				Modes: []mdbv1.AuthMode{"X509"},
 			},
 		},
 	}
-	mdb := mdbv1.MongoDBCommunity{
+	mdb := mdbv1.ADMongoDBCommunity{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:        "my-rs",
 			Namespace:   "my-ns",
 			Annotations: map[string]string{},
 		},
-		Spec: mdbv1.MongoDBCommunitySpec{
+		Spec: mdbv1.ADMongoDBCommunitySpec{
 			Members: 3,
 			Version: "4.2.2",
 			Security: mdbv1.Security{

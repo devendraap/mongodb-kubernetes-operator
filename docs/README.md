@@ -5,6 +5,6 @@
 - [Contribute to the MongoDB Kubernetes Operator](contributing.md)
 - [MongoDB Community Kubernetes Operator Architecture](architecture.md)
 - [Install and Upgrade the Community Kubernetes Operator](install-upgrade.md)
-- [Deploy and Configure MongoDBCommunity Resources](deploy-configure.md)
+- [Deploy and Configure ADMongoDBCommunity Resources](deploy-configure.md)
 - [Create Database Users](users.md)
-- [Secure MongoDBCommunity Resources](secure.md)
+- [Secure ADMongoDBCommunity Resources](secure.md)

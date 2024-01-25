@@ -13,12 +13,12 @@ import (
 )
 
 // ValidateInitialSpec checks if the resource's initial Spec is valid.
-func ValidateInitialSpec(mdb mdbv1.MongoDBCommunity, log *zap.SugaredLogger) error {
+func ValidateInitialSpec(mdb mdbv1.ADMongoDBCommunity, log *zap.SugaredLogger) error {
 	return validateSpec(mdb, log)
 }
 
 // ValidateUpdate validates that the new Spec, corresponding to the existing one, is still valid.
-func ValidateUpdate(mdb mdbv1.MongoDBCommunity, oldSpec mdbv1.MongoDBCommunitySpec, log *zap.SugaredLogger) error {
+func ValidateUpdate(mdb mdbv1.ADMongoDBCommunity, oldSpec mdbv1.ADMongoDBCommunitySpec, log *zap.SugaredLogger) error {
 	if oldSpec.Security.TLS.Enabled && !mdb.Spec.Security.TLS.Enabled {
 		return errors.New("TLS can't be set to disabled after it has been enabled")
 	}
@@ -26,7 +26,7 @@ func ValidateUpdate(mdb mdbv1.MongoDBCommunity, oldSpec mdbv1.MongoDBCommunitySp
 }
 
 // validateSpec validates the specs of the given resource definition.
-func validateSpec(mdb mdbv1.MongoDBCommunity, log *zap.SugaredLogger) error {
+func validateSpec(mdb mdbv1.ADMongoDBCommunity, log *zap.SugaredLogger) error {
 	if err := validateUsers(mdb); err != nil {
 		return err
 	}
@@ -51,7 +51,7 @@ func validateSpec(mdb mdbv1.MongoDBCommunity, log *zap.SugaredLogger) error {
 }
 
 // validateUsers checks if the users configuration is valid
-func validateUsers(mdb mdbv1.MongoDBCommunity) error {
+func validateUsers(mdb mdbv1.ADMongoDBCommunity) error {
 	connectionStringSecretNameMap := map[string]authtypes.User{}
 	nameCollisions := []string{}
 
@@ -139,7 +139,7 @@ func validateUsers(mdb mdbv1.MongoDBCommunity) error {
 }
 
 // validateArbiterSpec checks if the initial Member spec is valid.
-func validateArbiterSpec(mdb mdbv1.MongoDBCommunity) error {
+func validateArbiterSpec(mdb mdbv1.ADMongoDBCommunity) error {
 	if mdb.Spec.Arbiters < 0 {
 		return fmt.Errorf("number of arbiters must be greater or equal than 0")
 	}
@@ -151,7 +151,7 @@ func validateArbiterSpec(mdb mdbv1.MongoDBCommunity) error {
 }
 
 // validateAuthModeSpec checks that the list of modes does not contain duplicates.
-func validateAuthModeSpec(mdb mdbv1.MongoDBCommunity, log *zap.SugaredLogger) error {
+func validateAuthModeSpec(mdb mdbv1.ADMongoDBCommunity, log *zap.SugaredLogger) error {
 	allModes := mdb.Spec.Security.Authentication.Modes
 	mapMechanisms := make(map[string]struct{})
 
@@ -186,7 +186,7 @@ func validateAuthModeSpec(mdb mdbv1.MongoDBCommunity, log *zap.SugaredLogger) er
 	return nil
 }
 
-func validateAgentCertSecret(mdb mdbv1.MongoDBCommunity, log *zap.SugaredLogger) error {
+func validateAgentCertSecret(mdb mdbv1.ADMongoDBCommunity, log *zap.SugaredLogger) error {
 	agentMode := mdb.Spec.GetAgentAuthMode()
 	if agentMode != "X509" &&
 		mdb.Spec.Security.Authentication.AgentCertificateSecret != nil &&
@@ -196,7 +196,7 @@ func validateAgentCertSecret(mdb mdbv1.MongoDBCommunity, log *zap.SugaredLogger)
 	return nil
 }
 
-func validateStatefulSet(mdb mdbv1.MongoDBCommunity) error {
+func validateStatefulSet(mdb mdbv1.ADMongoDBCommunity) error {
 	stsReplicas := mdb.Spec.StatefulSetConfiguration.SpecWrapper.Spec.Replicas
 
 	if stsReplicas != nil && *stsReplicas != int32(mdb.Spec.Members) {

@@ -2,12 +2,13 @@ package feature_compatibility_version
 
 import (
 	"fmt"
-	mdbv1 "github.com/mongodb/mongodb-kubernetes-operator/api/v1"
-	. "github.com/mongodb/mongodb-kubernetes-operator/test/e2e/util/mongotester"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
 	"time"
+
+	mdbv1 "github.com/mongodb/mongodb-kubernetes-operator/api/v1"
+	. "github.com/mongodb/mongodb-kubernetes-operator/test/e2e/util/mongotester"
+	"github.com/stretchr/testify/assert"
 
 	e2eutil "github.com/mongodb/mongodb-kubernetes-operator/test/e2e"
 	"github.com/mongodb/mongodb-kubernetes-operator/test/e2e/mongodbtests"
@@ -76,7 +77,7 @@ func TestFeatureCompatibilityVersion(t *testing.T) {
 
 	// Upgrade the Feature Compatibility keeping the MongoDB version the same
 	t.Run("Test FeatureCompatibilityVersion can be upgraded", func(t *testing.T) {
-		err := e2eutil.UpdateMongoDBResource(&mdb, func(db *mdbv1.MongoDBCommunity) {
+		err := e2eutil.UpdateMongoDBResource(&mdb, func(db *mdbv1.ADMongoDBCommunity) {
 			db.Spec.FeatureCompatibilityVersion = upgradedFeatureCompatibility
 		})
 		assert.NoError(t, err)

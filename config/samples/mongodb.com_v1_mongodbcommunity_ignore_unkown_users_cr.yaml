@@ -1,6 +1,6 @@
 ---
-apiVersion: mongodbcommunity.mongodb.com/v1
-kind: MongoDBCommunity
+apiVersion: admongodbcommunity.mongodb.com/v1
+kind: ADADMongoDBCommunity
 metadata:
   name: ignore-unkown-users-example
 spec:

@@ -77,7 +77,7 @@ func getVolumes(ctx *e2eutil.Context, volumeType string, members int) []corev1.P
 	return volumes
 }
 
-func getPvc(pvcType string, mdb v1.MongoDBCommunity) corev1.PersistentVolumeClaim {
+func getPvc(pvcType string, mdb v1.ADMongoDBCommunity) corev1.PersistentVolumeClaim {
 	name := ""
 	if pvcType == "logs" {
 		name = mdb.LogsVolumeName()

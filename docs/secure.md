@@ -1,12 +1,12 @@
-# Secure MongoDBCommunity Resources #
+# Secure ADMongoDBCommunity Resources #
 
 ## Table of Contents
 
-- [Secure MongoDBCommunity Resource Connections using TLS](#secure-mongodbcommunity-resource-connections-using-tls)
+- [Secure ADMongoDBCommunity Resource Connections using TLS](#secure-mongodbcommunity-resource-connections-using-tls)
   - [Prerequisites](#prerequisites)
   - [Procedure](#procedure)
 
-## Secure MongoDBCommunity Resource Connections using TLS
+## Secure ADMongoDBCommunity Resource Connections using TLS
 
 You can configure the MongoDB Community Kubernetes Operator to use TLS 
 certificates to encrypt traffic between:
@@ -20,13 +20,13 @@ Kubernetes.
 
 ### Prerequisites
 
-Before you secure MongoDBCommunity resource connections using TLS, you 
+Before you secure ADMongoDBCommunity resource connections using TLS, you 
 must [Create a database user](../docs/users.md) to authenticate to your 
-MongoDBCommunity resource.
+ADMongoDBCommunity resource.
 
 ### Procedure
 
-To secure connections to MongoDBCommunity resources with TLS using `cert-manager`:
+To secure connections to ADMongoDBCommunity resources with TLS using `cert-manager`:
 
 1. Add the `cert-manager` repository to your `helm` repository list and
    ensure it's up to date:
@@ -43,7 +43,7 @@ To secure connections to MongoDBCommunity resources with TLS using `cert-manager
    --create-namespace --set installCRDs=true
    ```
 
-1. Create a TLS-secured MongoDBCommunity resource:
+1. Create a TLS-secured ADMongoDBCommunity resource:
 
    ```
    helm upgrade --install community-operator mongodb/community-operator \
@@ -78,7 +78,7 @@ To secure connections to MongoDBCommunity resources with TLS using `cert-manager
    kubectl exec -it mongodb-replica-set -c mongod -- bash
    ```
 
-   Where `mongodb-replica-set` is the name of your MongoDBCommunity resource
+   Where `mongodb-replica-set` is the name of your ADMongoDBCommunity resource
 
    - Then, use `mongosh` to connect over TLS:
 
@@ -88,5 +88,5 @@ To secure connections to MongoDBCommunity resources with TLS using `cert-manager
    --host <mongodb-replica-set>.<mongodb-replica-set>-svc.<namespace>.svc.cluster.local
    ```
 
-   Where `mongodb-replica-set` is the name of your MongoDBCommunity 
+   Where `mongodb-replica-set` is the name of your ADMongoDBCommunity 
    resource and `namespace` is the namespace of your deployment.

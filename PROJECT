@@ -11,7 +11,7 @@ resources:
     crdVersion: v1
     namespaced: true
   group: mongodbcommunity
-  kind: MongoDBCommunity
+  kind: ADADMongoDBCommunity
   version: v1
 - api:
     crdVersion: v1
@@ -19,7 +19,7 @@ resources:
   controller: true
   domain: mongodb.com
   group: mongodbcommunity
-  kind: SimpleMongoDBCommunity
+  kind: SimpleADMongoDBCommunity
   path: github.com/mongodb/mongodb-kubernetes-operator/api/v1alpha1
   version: v1alpha1
 version: "3"

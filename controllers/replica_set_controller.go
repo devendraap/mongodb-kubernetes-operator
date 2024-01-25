@@ -78,7 +78,7 @@ func NewReconciler(mgr manager.Manager) *ReplicaSetReconciler {
 func (r *ReplicaSetReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		WithOptions(controller.Options{MaxConcurrentReconciles: 3}).
-		For(&mdbv1.MongoDBCommunity{}, builder.WithPredicates(predicates.OnlyOnSpecChange())).
+		For(&mdbv1.ADMongoDBCommunity{}, builder.WithPredicates(predicates.OnlyOnSpecChange())).
 		Watches(&corev1.Secret{}, r.secretWatcher).
 		Watches(&corev1.ConfigMap{}, r.configMapWatcher).
 		Owns(&appsv1.StatefulSet{}).
@@ -96,9 +96,9 @@ type ReplicaSetReconciler struct {
 	configMapWatcher *watch.ResourceWatcher
 }
 
-// +kubebuilder:rbac:groups=mongodbcommunity.mongodb.com,resources=mongodbcommunity,verbs=get;list;watch;create;update;patch;delete
-// +kubebuilder:rbac:groups=mongodbcommunity.mongodb.com,resources=mongodbcommunity/status,verbs=get;update;patch
-// +kubebuilder:rbac:groups=mongodbcommunity.mongodb.com,resources=mongodbcommunity/finalizers,verbs=update
+// +kubebuilder:rbac:groups=admongodbcommunity.admongodb.com,resources=mongodbcommunity,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=admongodbcommunity.admongodb.com,resources=mongodbcommunity/status,verbs=get;update;patch
+// +kubebuilder:rbac:groups=admongodbcommunity.admongodb.com,resources=mongodbcommunity/finalizers,verbs=update
 // +kubebuilder:rbac:groups=apps,resources=deployments,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=core,resources=pods,verbs=get;list
 
@@ -111,7 +111,7 @@ func (r ReplicaSetReconciler) Reconcile(ctx context.Context, request reconcile.R
 
 	// TODO: generalize preparation for resource
 	// Fetch the MongoDB instance
-	mdb := mdbv1.MongoDBCommunity{}
+	mdb := mdbv1.ADMongoDBCommunity{}
 	err := r.client.Get(context.TODO(), request.NamespacedName, &mdb)
 	if err != nil {
 		if apiErrors.IsNotFound(err) {
@@ -264,8 +264,8 @@ func (r ReplicaSetReconciler) Reconcile(ctx context.Context, request reconcile.R
 	return res, err
 }
 
-// updateLastSuccessfulConfiguration annotates the MongoDBCommunity resource with the latest configuration
-func (r *ReplicaSetReconciler) updateLastSuccessfulConfiguration(mdb mdbv1.MongoDBCommunity) error {
+// updateLastSuccessfulConfiguration annotates the ADMongoDBCommunity resource with the latest configuration
+func (r *ReplicaSetReconciler) updateLastSuccessfulConfiguration(mdb mdbv1.ADMongoDBCommunity) error {
 	currentSpec, err := json.Marshal(mdb.Spec)
 	if err != nil {
 		return err
@@ -280,9 +280,9 @@ func (r *ReplicaSetReconciler) updateLastSuccessfulConfiguration(mdb mdbv1.Mongo
 	return annotations.SetAnnotations(&mdb, specAnnotations, r.client)
 }
 
-// ensureTLSResources creates any required TLS resources that the MongoDBCommunity
+// ensureTLSResources creates any required TLS resources that the ADMongoDBCommunity
 // requires for TLS configuration.
-func (r *ReplicaSetReconciler) ensureTLSResources(mdb mdbv1.MongoDBCommunity) error {
+func (r *ReplicaSetReconciler) ensureTLSResources(mdb mdbv1.ADMongoDBCommunity) error {
 	if !mdb.Spec.Security.TLS.Enabled {
 		return nil
 	}
@@ -307,9 +307,9 @@ func (r *ReplicaSetReconciler) ensureTLSResources(mdb mdbv1.MongoDBCommunity) er
 	return nil
 }
 
-// ensurePrometheusTLSResources creates any required TLS resources that the MongoDBCommunity
+// ensurePrometheusTLSResources creates any required TLS resources that the ADMongoDBCommunity
 // requires for TLS configuration.
-func (r *ReplicaSetReconciler) ensurePrometheusTLSResources(mdb mdbv1.MongoDBCommunity) error {
+func (r *ReplicaSetReconciler) ensurePrometheusTLSResources(mdb mdbv1.ADMongoDBCommunity) error {
 	if mdb.Spec.Prometheus == nil || mdb.Spec.Prometheus.TLSSecretRef.Name == "" {
 		return nil
 	}
@@ -324,13 +324,13 @@ func (r *ReplicaSetReconciler) ensurePrometheusTLSResources(mdb mdbv1.MongoDBCom
 	return nil
 }
 
-// deployStatefulSet deploys the backing StatefulSet of the MongoDBCommunity resource.
+// deployStatefulSet deploys the backing StatefulSet of the ADMongoDBCommunity resource.
 //
 // When `Spec.Arbiters` > 0, a second StatefulSet will be created, with the amount
 // of Pods corresponding to the amount of expected arbiters.
 //
 // The returned boolean indicates that the StatefulSet is ready.
-func (r *ReplicaSetReconciler) deployStatefulSet(mdb mdbv1.MongoDBCommunity) (bool, error) {
+func (r *ReplicaSetReconciler) deployStatefulSet(mdb mdbv1.ADMongoDBCommunity) (bool, error) {
 	r.log.Info("Creating/Updating StatefulSet")
 	if err := r.createOrUpdateStatefulSet(mdb, false); err != nil {
 		return false, fmt.Errorf("error creating/updating StatefulSet: %s", err)
@@ -353,9 +353,9 @@ func (r *ReplicaSetReconciler) deployStatefulSet(mdb mdbv1.MongoDBCommunity) (bo
 	return isReady || currentSts.Spec.UpdateStrategy.Type == appsv1.OnDeleteStatefulSetStrategyType, nil
 }
 
-// deployAutomationConfig deploys the AutomationConfig for the MongoDBCommunity resource.
+// deployAutomationConfig deploys the AutomationConfig for the ADMongoDBCommunity resource.
 // The returned boolean indicates whether or not that Agents have all reached goal state.
-func (r *ReplicaSetReconciler) deployAutomationConfig(mdb mdbv1.MongoDBCommunity) (bool, error) {
+func (r *ReplicaSetReconciler) deployAutomationConfig(mdb mdbv1.ADMongoDBCommunity) (bool, error) {
 	r.log.Infof("Creating/Updating AutomationConfig")
 
 	sts, err := r.client.GetStatefulSet(mdb.NamespacedName())
@@ -392,7 +392,7 @@ func (r *ReplicaSetReconciler) deployAutomationConfig(mdb mdbv1.MongoDBCommunity
 
 // shouldRunInOrder returns true if the order of execution of the AutomationConfig & StatefulSet
 // functions should be sequential or not. A value of false indicates they will run in reversed order.
-func (r *ReplicaSetReconciler) shouldRunInOrder(mdb mdbv1.MongoDBCommunity) bool {
+func (r *ReplicaSetReconciler) shouldRunInOrder(mdb mdbv1.ADMongoDBCommunity) bool {
 	// The only case when we push the StatefulSet first is when we are ensuring TLS for the already existing ReplicaSet
 	sts, err := r.client.GetStatefulSet(mdb.NamespacedName())
 	if !statefulset.IsReady(sts, mdb.StatefulSetReplicasThisReconciliation()) && mdb.Spec.Security.TLS.Enabled {
@@ -432,7 +432,7 @@ func (r *ReplicaSetReconciler) shouldRunInOrder(mdb mdbv1.MongoDBCommunity) bool
 // deployMongoDBReplicaSet will ensure that both the AutomationConfig secret and backing StatefulSet
 // have been successfully created. A boolean is returned indicating if the process is complete
 // and an error if there was one.
-func (r *ReplicaSetReconciler) deployMongoDBReplicaSet(mdb mdbv1.MongoDBCommunity) (bool, error) {
+func (r *ReplicaSetReconciler) deployMongoDBReplicaSet(mdb mdbv1.ADMongoDBCommunity) (bool, error) {
 	return functions.RunSequentially(r.shouldRunInOrder(mdb),
 		func() (bool, error) {
 			return r.deployAutomationConfig(mdb)
@@ -446,7 +446,7 @@ func (r *ReplicaSetReconciler) deployMongoDBReplicaSet(mdb mdbv1.MongoDBCommunit
 //
 // The Service definition is built from the `mdb` resource. If `isArbiter` is set to true, the Service
 // will be created for the arbiters Statefulset.
-func (r *ReplicaSetReconciler) ensureService(mdb mdbv1.MongoDBCommunity) error {
+func (r *ReplicaSetReconciler) ensureService(mdb mdbv1.ADMongoDBCommunity) error {
 	processPortManager, err := r.createProcessPortManager(mdb)
 	if err != nil {
 		return err
@@ -472,7 +472,7 @@ func (r *ReplicaSetReconciler) ensureService(mdb mdbv1.MongoDBCommunity) error {
 // createProcessPortManager is a helper method for creating new ReplicaSetPortManager.
 // ReplicaSetPortManager needs current automation config and current pod state and the code for getting them
 // was extracted here as it is used in ensureService and buildAutomationConfig.
-func (r *ReplicaSetReconciler) createProcessPortManager(mdb mdbv1.MongoDBCommunity) (*agent.ReplicaSetPortManager, error) {
+func (r *ReplicaSetReconciler) createProcessPortManager(mdb mdbv1.ADMongoDBCommunity) (*agent.ReplicaSetPortManager, error) {
 	currentAC, err := automationconfig.ReadFromSecret(r.client, types.NamespacedName{Name: mdb.AutomationConfigSecretName(), Namespace: mdb.Namespace})
 	if err != nil {
 		return nil, fmt.Errorf("could not read existing automation config: %s", err)
@@ -486,7 +486,7 @@ func (r *ReplicaSetReconciler) createProcessPortManager(mdb mdbv1.MongoDBCommuni
 	return agent.NewReplicaSetPortManager(r.log, mdb.Spec.AdditionalMongodConfig.GetDBPort(), currentPodStates, currentAC.Processes), nil
 }
 
-func (r *ReplicaSetReconciler) createOrUpdateStatefulSet(mdb mdbv1.MongoDBCommunity, isArbiter bool) error {
+func (r *ReplicaSetReconciler) createOrUpdateStatefulSet(mdb mdbv1.ADMongoDBCommunity, isArbiter bool) error {
 	set := appsv1.StatefulSet{}
 
 	name := mdb.NamespacedName()
@@ -513,7 +513,7 @@ func (r *ReplicaSetReconciler) createOrUpdateStatefulSet(mdb mdbv1.MongoDBCommun
 
 // ensureAutomationConfig makes sure the AutomationConfig secret has been successfully created. The automation config
 // that was updated/created is returned.
-func (r ReplicaSetReconciler) ensureAutomationConfig(mdb mdbv1.MongoDBCommunity) (automationconfig.AutomationConfig, error) {
+func (r ReplicaSetReconciler) ensureAutomationConfig(mdb mdbv1.ADMongoDBCommunity) (automationconfig.AutomationConfig, error) {
 	ac, err := r.buildAutomationConfig(mdb)
 	if err != nil {
 		return automationconfig.AutomationConfig{}, fmt.Errorf("could not build automation config: %s", err)
@@ -527,7 +527,7 @@ func (r ReplicaSetReconciler) ensureAutomationConfig(mdb mdbv1.MongoDBCommunity)
 	)
 }
 
-func buildAutomationConfig(mdb mdbv1.MongoDBCommunity, auth automationconfig.Auth, currentAc automationconfig.AutomationConfig, modifications ...automationconfig.Modification) (automationconfig.AutomationConfig, error) {
+func buildAutomationConfig(mdb mdbv1.ADMongoDBCommunity, auth automationconfig.Auth, currentAc automationconfig.AutomationConfig, modifications ...automationconfig.Modification) (automationconfig.AutomationConfig, error) {
 	domain := getDomain(mdb.ServiceName(), mdb.Namespace, os.Getenv(clusterDomain))
 	arbiterDomain := getDomain(mdb.ServiceName(), mdb.Namespace, os.Getenv(clusterDomain))
 
@@ -563,7 +563,7 @@ func buildAutomationConfig(mdb mdbv1.MongoDBCommunity, auth automationconfig.Aut
 		Build()
 }
 
-func guessEnterprise(mdb mdbv1.MongoDBCommunity) bool {
+func guessEnterprise(mdb mdbv1.ADMongoDBCommunity) bool {
 	overrideAssumption, err := strconv.ParseBool(os.Getenv(construct.MongoDBAssumeEnterpriseEnv))
 	if err == nil {
 		return overrideAssumption
@@ -588,7 +588,7 @@ func guessEnterprise(mdb mdbv1.MongoDBCommunity) bool {
 
 // buildService creates a Service that will be used for the Replica Set StatefulSet
 // that allows all the members of the STS to see each other.
-func (r *ReplicaSetReconciler) buildService(mdb mdbv1.MongoDBCommunity, portManager *agent.ReplicaSetPortManager) corev1.Service {
+func (r *ReplicaSetReconciler) buildService(mdb mdbv1.ADMongoDBCommunity, portManager *agent.ReplicaSetPortManager) corev1.Service {
 	label := make(map[string]string)
 	name := mdb.ServiceName()
 
@@ -617,15 +617,15 @@ func (r *ReplicaSetReconciler) buildService(mdb mdbv1.MongoDBCommunity, portMana
 // validateSpec checks if the MongoDB resource Spec is valid.
 // If there has not yet been a successful configuration, the function runs the initial Spec validations. Otherwise,
 // it checks that the attempted Spec is valid in relation to the Spec that resulted from that last successful configuration.
-// The validation also returns the lastSuccessFulConfiguration Spec as mdbv1.MongoDBCommunitySpec.
-func (r ReplicaSetReconciler) validateSpec(mdb mdbv1.MongoDBCommunity) (error, *mdbv1.MongoDBCommunitySpec) {
+// The validation also returns the lastSuccessFulConfiguration Spec as mdbv1.ADMongoDBCommunitySpec.
+func (r ReplicaSetReconciler) validateSpec(mdb mdbv1.ADMongoDBCommunity) (error, *mdbv1.ADMongoDBCommunitySpec) {
 	lastSuccessfulConfigurationSaved, ok := mdb.Annotations[lastSuccessfulConfiguration]
 	if !ok {
 		// First version of Spec
 		return validation.ValidateInitialSpec(mdb, r.log), nil
 	}
 
-	lastSpec := mdbv1.MongoDBCommunitySpec{}
+	lastSpec := mdbv1.ADMongoDBCommunitySpec{}
 	err := json.Unmarshal([]byte(lastSuccessfulConfigurationSaved), &lastSpec)
 	if err != nil {
 		return err, &lastSpec
@@ -634,7 +634,7 @@ func (r ReplicaSetReconciler) validateSpec(mdb mdbv1.MongoDBCommunity) (error, *
 	return validation.ValidateUpdate(mdb, lastSpec, r.log), &lastSpec
 }
 
-func getCustomRolesModification(mdb mdbv1.MongoDBCommunity) (automationconfig.Modification, error) {
+func getCustomRolesModification(mdb mdbv1.ADMongoDBCommunity) (automationconfig.Modification, error) {
 	roles := mdb.Spec.Security.Roles
 	if roles == nil {
 		return automationconfig.NOOP(), nil
@@ -645,7 +645,7 @@ func getCustomRolesModification(mdb mdbv1.MongoDBCommunity) (automationconfig.Mo
 	}, nil
 }
 
-func (r ReplicaSetReconciler) buildAutomationConfig(mdb mdbv1.MongoDBCommunity) (automationconfig.AutomationConfig, error) {
+func (r ReplicaSetReconciler) buildAutomationConfig(mdb mdbv1.ADMongoDBCommunity) (automationconfig.AutomationConfig, error) {
 	tlsModification, err := getTLSConfigModification(r.client, r.client, mdb)
 	if err != nil {
 		return automationconfig.AutomationConfig{}, fmt.Errorf("could not configure TLS modification: %s", err)
@@ -728,7 +728,7 @@ func OverrideToAutomationConfig(override mdbv1.AutomationConfigOverride) automat
 
 // getMongodConfigModification will merge the additional configuration in the CRD
 // into the configuration set up by the operator.
-func getMongodConfigModification(mdb mdbv1.MongoDBCommunity) automationconfig.Modification {
+func getMongodConfigModification(mdb mdbv1.ADMongoDBCommunity) automationconfig.Modification {
 	return func(ac *automationconfig.AutomationConfig) {
 		for i := range ac.Processes {
 			// Mergo requires both objects to have the same type
@@ -740,13 +740,13 @@ func getMongodConfigModification(mdb mdbv1.MongoDBCommunity) automationconfig.Mo
 
 // buildStatefulSet takes a MongoDB resource and converts it into
 // the corresponding stateful set
-func buildStatefulSet(mdb mdbv1.MongoDBCommunity) (appsv1.StatefulSet, error) {
+func buildStatefulSet(mdb mdbv1.ADMongoDBCommunity) (appsv1.StatefulSet, error) {
 	sts := appsv1.StatefulSet{}
 	buildStatefulSetModificationFunction(mdb)(&sts)
 	return sts, nil
 }
 
-func buildStatefulSetModificationFunction(mdb mdbv1.MongoDBCommunity) statefulset.Modification {
+func buildStatefulSetModificationFunction(mdb mdbv1.ADMongoDBCommunity) statefulset.Modification {
 	commonModification := construct.BuildMongoDBReplicaSetStatefulSetModificationFunction(&mdb, &mdb)
 	return statefulset.Apply(
 		commonModification,
@@ -767,7 +767,7 @@ func buildStatefulSetModificationFunction(mdb mdbv1.MongoDBCommunity) statefulse
 	)
 }
 
-func buildArbitersModificationFunction(mdb mdbv1.MongoDBCommunity) statefulset.Modification {
+func buildArbitersModificationFunction(mdb mdbv1.ADMongoDBCommunity) statefulset.Modification {
 	return statefulset.Apply(
 		statefulset.WithReplicas(mdb.StatefulSetArbitersThisReconciliation()),
 		statefulset.WithServiceName(mdb.ServiceName()),

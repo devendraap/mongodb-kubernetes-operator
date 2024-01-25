@@ -25,14 +25,14 @@ func init() {
 	os.Setenv(VersionUpgradeHookImageEnv, "version-upgrade-hook-image")
 }
 
-func newTestReplicaSet() mdbv1.MongoDBCommunity {
-	return mdbv1.MongoDBCommunity{
+func newTestReplicaSet() mdbv1.ADMongoDBCommunity {
+	return mdbv1.ADMongoDBCommunity{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:        "my-rs",
 			Namespace:   "my-ns",
 			Annotations: map[string]string{},
 		},
-		Spec: mdbv1.MongoDBCommunitySpec{
+		Spec: mdbv1.ADMongoDBCommunitySpec{
 			Members: 3,
 			Version: "6.0.5",
 		},
@@ -190,7 +190,7 @@ func TestMongoDBAgentLogging_Container(t *testing.T) {
 	})
 }
 
-func assertStatefulSetIsBuiltCorrectly(t *testing.T, mdb mdbv1.MongoDBCommunity, sts *appsv1.StatefulSet) {
+func assertStatefulSetIsBuiltCorrectly(t *testing.T, mdb mdbv1.ADMongoDBCommunity, sts *appsv1.StatefulSet) {
 	assert.Len(t, sts.Spec.Template.Spec.Containers, 2)
 	assert.Len(t, sts.Spec.Template.Spec.InitContainers, 2)
 	assert.Equal(t, mdb.ServiceName(), sts.Spec.ServiceName)

@@ -59,14 +59,14 @@ func TestVersion_ApplyOption(t *testing.T) {
 	assert.Equal(t, testVersion, mdb.Status.Version, "Status should be updated")
 }
 
-func newReplicaSet(members int, version string, name, namespace string) mdbv1.MongoDBCommunity {
-	return mdbv1.MongoDBCommunity{
+func newReplicaSet(members int, version string, name, namespace string) mdbv1.ADMongoDBCommunity {
+	return mdbv1.ADMongoDBCommunity{
 		TypeMeta: metav1.TypeMeta{},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      name,
 			Namespace: namespace,
 		},
-		Spec: mdbv1.MongoDBCommunitySpec{
+		Spec: mdbv1.ADMongoDBCommunitySpec{
 			Members: members,
 			Version: version,
 		},

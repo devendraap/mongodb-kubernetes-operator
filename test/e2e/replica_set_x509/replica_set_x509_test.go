@@ -64,7 +64,7 @@ func TestReplicaSetX509(t *testing.T) {
 
 	t.Run("Connection with valid certificate", func(t *testing.T) {
 		t.Run("Update MongoDB Resource", func(t *testing.T) {
-			err := e2eutil.UpdateMongoDBResource(&mdb, func(m *v1.MongoDBCommunity) {
+			err := e2eutil.UpdateMongoDBResource(&mdb, func(m *v1.ADMongoDBCommunity) {
 				m.Spec.Users = []v1.MongoDBUser{getValidUser()}
 			})
 			assert.NoError(t, err)
@@ -118,7 +118,7 @@ func TestReplicaSetX509(t *testing.T) {
 
 	t.Run("Transition to also allow SCRAM", func(t *testing.T) {
 		t.Run("Update MongoDB Resource", func(t *testing.T) {
-			err := e2eutil.UpdateMongoDBResource(&mdb, func(m *v1.MongoDBCommunity) {
+			err := e2eutil.UpdateMongoDBResource(&mdb, func(m *v1.ADMongoDBCommunity) {
 				m.Spec.Security.Authentication.Modes = []v1.AuthMode{"X509", "SCRAM"}
 				m.Spec.Security.Authentication.AgentMode = "X509"
 			})
@@ -137,7 +137,7 @@ func TestReplicaSetX509(t *testing.T) {
 
 	t.Run("Transition to SCRAM agent", func(t *testing.T) {
 		t.Run("Update MongoDB Resource", func(t *testing.T) {
-			err := e2eutil.UpdateMongoDBResource(&mdb, func(m *v1.MongoDBCommunity) {
+			err := e2eutil.UpdateMongoDBResource(&mdb, func(m *v1.ADMongoDBCommunity) {
 				m.Spec.Security.Authentication.AgentMode = "SCRAM"
 			})
 			assert.NoError(t, err)
@@ -196,7 +196,7 @@ func getInvalidUser() v1.MongoDBUser {
 	}
 }
 
-func createCerts(t *testing.T, mdb *v1.MongoDBCommunity) (string, string, string) {
+func createCerts(t *testing.T, mdb *v1.ADMongoDBCommunity) (string, string, string) {
 	dir, _ := os.MkdirTemp("", "certdir")
 
 	t.Logf("Creating client certificate pem file")

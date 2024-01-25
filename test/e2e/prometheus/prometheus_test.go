@@ -53,7 +53,7 @@ func TestPrometheus(t *testing.T) {
 		t.Run("AutomationConfig has the correct version", mongodbtests.AutomationConfigVersionHasTheExpectedVersion(&mdb, 1))
 
 		t.Run("Enabling HTTPS on the Prometheus endpoint", func(t *testing.T) {
-			err = e2eutil.UpdateMongoDBResource(&mdb, func(mdb *v1.MongoDBCommunity) {
+			err = e2eutil.UpdateMongoDBResource(&mdb, func(mdb *v1.ADMongoDBCommunity) {
 				mdb.Spec.Prometheus.TLSSecretRef.Name = "tls-certificate"
 			})
 			assert.NoError(t, err)

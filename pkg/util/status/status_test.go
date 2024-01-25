@@ -13,7 +13,7 @@ import (
 
 type errorOption struct{}
 
-func (e errorOption) ApplyOption(_ *mdbv1.MongoDBCommunity) {}
+func (e errorOption) ApplyOption(_ *mdbv1.ADMongoDBCommunity) {}
 
 func (e errorOption) GetResult() (reconcile.Result, error) {
 	return reconcile.Result{}, fmt.Errorf("error")
@@ -21,7 +21,7 @@ func (e errorOption) GetResult() (reconcile.Result, error) {
 
 type successOption struct{}
 
-func (s successOption) ApplyOption(_ *mdbv1.MongoDBCommunity) {}
+func (s successOption) ApplyOption(_ *mdbv1.ADMongoDBCommunity) {}
 
 func (s successOption) GetResult() (reconcile.Result, error) {
 	return reconcile.Result{}, nil
@@ -29,7 +29,7 @@ func (s successOption) GetResult() (reconcile.Result, error) {
 
 type retryOption struct{}
 
-func (r retryOption) ApplyOption(_ *mdbv1.MongoDBCommunity) {}
+func (r retryOption) ApplyOption(_ *mdbv1.ADMongoDBCommunity) {}
 
 func (r retryOption) GetResult() (reconcile.Result, error) {
 	return reconcile.Result{Requeue: true}, nil

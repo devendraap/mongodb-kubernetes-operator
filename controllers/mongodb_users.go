@@ -12,7 +12,7 @@ import (
 
 // ensureUserResources will check that the configured user password secrets can be found
 // and will start monitor them so that the reconcile process is triggered every time these secrets are updated
-func (r ReplicaSetReconciler) ensureUserResources(mdb mdbv1.MongoDBCommunity) error {
+func (r ReplicaSetReconciler) ensureUserResources(mdb mdbv1.ADMongoDBCommunity) error {
 	for _, user := range mdb.GetAuthUsers() {
 		if user.Database != constants.ExternalDB {
 			secretNamespacedName := types.NamespacedName{Name: user.PasswordSecretName, Namespace: mdb.Namespace}
@@ -38,7 +38,7 @@ func (r ReplicaSetReconciler) ensureUserResources(mdb mdbv1.MongoDBCommunity) er
 
 // updateConnectionStringSecrets updates secrets where user specific connection strings are stored.
 // The client applications can mount these secrets and connect to the mongodb cluster
-func (r ReplicaSetReconciler) updateConnectionStringSecrets(mdb mdbv1.MongoDBCommunity, clusterDomain string) error {
+func (r ReplicaSetReconciler) updateConnectionStringSecrets(mdb mdbv1.ADMongoDBCommunity, clusterDomain string) error {
 	for _, user := range mdb.GetAuthUsers() {
 		secretName := user.ConnectionStringSecretName
 

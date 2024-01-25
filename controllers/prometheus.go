@@ -19,7 +19,7 @@ const (
 )
 
 // PrometheusModification adds Prometheus configuration to AutomationConfig.
-func getPrometheusModification(getUpdateCreator secret.GetUpdateCreator, mdb mdbv1.MongoDBCommunity) (automationconfig.Modification, error) {
+func getPrometheusModification(getUpdateCreator secret.GetUpdateCreator, mdb mdbv1.ADMongoDBCommunity) (automationconfig.Modification, error) {
 	if mdb.Spec.Prometheus == nil {
 		return automationconfig.NOOP(), nil
 	}
@@ -67,7 +67,7 @@ func getPrometheusModification(getUpdateCreator secret.GetUpdateCreator, mdb mdb
 // prometheusPort returns a `corev1.ServicePort` to be configured in the StatefulSet
 // for the Prometheus endpoint. This function will only return a new Port when
 // Prometheus has been configured, and nil otherwise.
-func prometheusPort(mdb mdbv1.MongoDBCommunity) *corev1.ServicePort {
+func prometheusPort(mdb mdbv1.ADMongoDBCommunity) *corev1.ServicePort {
 	if mdb.Spec.Prometheus != nil {
 		return &corev1.ServicePort{
 			Port: int32(mdb.Spec.Prometheus.GetPort()),

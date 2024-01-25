@@ -10,7 +10,7 @@ The MongoDB Community Kubernetes Operator is a [Custom Resource Definition](http
 
 ## Cluster Configuration
 
-You create and update MongoDBCommunity resources by defining a MongoDBCommunity resource definition. When you apply the MongoDBCommunity resource definition to your Kubernetes environment, the Operator:
+You create and update ADMongoDBCommunity resources by defining a ADMongoDBCommunity resource definition. When you apply the ADMongoDBCommunity resource definition to your Kubernetes environment, the Operator:
 
 1. Creates a [StatefulSet](https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/) that contains one [pod](https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/) for each [replica set](https://www.mongodb.com/docs/manual/replication/) member.
 1. Writes the Automation configuration as a [Secret](https://kubernetes.io/docs/concepts/configuration/secret/) and mounts it to each pod.
@@ -28,7 +28,7 @@ You create and update MongoDBCommunity resources by defining a MongoDBCommunity 
    - `automation-config` which is mounted from the previously generated `Secret` to both the server and agent. Only lives as long as the pod.
    - `healthstatus` which contains the agent's current status. This is shared with the `mongod` container where it's used by the pre-stop hook. Only lives as long as the pod.
 
-1. Initiates the MongoDB Agent, which in turn creates the database configuration and launches the `mongod` process according to your [MongoDBCommunity resource definition](../config/crd/bases/mongodbcommunity.mongodb.com_mongodbcommunity.yaml).
+1. Initiates the MongoDB Agent, which in turn creates the database configuration and launches the `mongod` process according to your [ADMongoDBCommunity resource definition](../config/crd/bases/mongodbcommunity.mongodb.com_mongodbcommunity.yaml).
 
 <!--
 <img src="" alt="Architecure diagram of the MongoDB Community Kubernetes Operator">
