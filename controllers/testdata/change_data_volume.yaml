@@ -1,4 +1,4 @@
-apiVersion: acceldata.com/v1
+apiVersion: acceldata.io/v1
 kind: ADADMongoDBCommunity
 metadata:
   name: change-data-volume-mdb

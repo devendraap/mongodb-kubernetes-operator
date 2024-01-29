@@ -96,9 +96,9 @@ type ReplicaSetReconciler struct {
 	configMapWatcher *watch.ResourceWatcher
 }
 
-// +kubebuilder:rbac:groups=admongodbcommunity.acceldata.com,resources=mongodbcommunity,verbs=get;list;watch;create;update;patch;delete
-// +kubebuilder:rbac:groups=admongodbcommunity.acceldata.com,resources=mongodbcommunity/status,verbs=get;update;patch
-// +kubebuilder:rbac:groups=admongodbcommunity.acceldata.com,resources=mongodbcommunity/finalizers,verbs=update
+// +kubebuilder:rbac:groups=admongodbcommunity.acceldata.io,resources=mongodbcommunity,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=admongodbcommunity.acceldata.io,resources=mongodbcommunity/status,verbs=get;update;patch
+// +kubebuilder:rbac:groups=admongodbcommunity.acceldata.io,resources=mongodbcommunity/finalizers,verbs=update
 // +kubebuilder:rbac:groups=apps,resources=deployments,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=core,resources=pods,verbs=get;list
 
