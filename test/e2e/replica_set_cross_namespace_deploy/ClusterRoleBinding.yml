@@ -1,0 +1,33 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: admongodb-kubernetes-operator
+  uid: 3490207e-e9e8-4640-9cbd-f66503ff64a8
+  resourceVersion: '27215199'
+  creationTimestamp: '2024-01-25T11:10:56Z'
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: >
+      {"apiVersion":"rbac.authorization.k8s.io/v1","kind":"ClusterRoleBinding","metadata":{"annotations":{},"name":"admongodb-kubernetes-operator"},"roleRef":{"apiGroup":"rbac.authorization.k8s.io","kind":"ClusterRole","name":"admongodb-kubernetes-operator"},"subjects":[{"kind":"ServiceAccount","name":"admongodb-kubernetes-operator","namespace":"mongodb1"}]}
+  managedFields:
+    - manager: kubectl-client-side-apply
+      operation: Update
+      apiVersion: rbac.authorization.k8s.io/v1
+      time: '2024-01-25T11:10:56Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:metadata:
+          f:annotations:
+            .: {}
+            f:kubectl.kubernetes.io/last-applied-configuration: {}
+        f:roleRef: {}
+        f:subjects: {}
+  selfLink: >-
+    /apis/rbac.authorization.k8s.io/v1/clusterrolebindings/admongodb-kubernetes-operator
+subjects:
+  - kind: ServiceAccount
+    name: admongodb-kubernetes-operator
+    namespace: mongodb1
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: admongodb-kubernetes-operator

@@ -13,12 +13,12 @@ func TestIsTransientError(t *testing.T) {
 	}{
 		{
 			"Test Transient capitalised error",
-			fmt.Errorf("Error updating the status of the MongoDB resource: Operation cannot be fulfilled on admongodbcommunity.admongodb.com \"mdb0\": The object has been modified; please apply your changes to the latest version and try again"),
+			fmt.Errorf("Error updating the status of the MongoDB resource: Operation cannot be fulfilled on admongodbcommunity.acceldata.com \"mdb0\": The object has been modified; please apply your changes to the latest version and try again"),
 			true,
 		},
 		{
 			"Test Transient lower case error",
-			fmt.Errorf("error updating the status of the MongoDB resource: Operation cannot be fulfilled on admongodbcommunity.admongodb.com \"mdb0\": the object has been modified; please apply your changes to the latest version and try again"),
+			fmt.Errorf("error updating the status of the MongoDB resource: Operation cannot be fulfilled on admongodbcommunity.acceldata.com \"mdb0\": the object has been modified; please apply your changes to the latest version and try again"),
 			true,
 		},
 		{
