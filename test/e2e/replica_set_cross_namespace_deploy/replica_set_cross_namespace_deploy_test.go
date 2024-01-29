@@ -69,7 +69,7 @@ func TestCrossNamespaceDeploy(t *testing.T) {
 // for the database StatefulSet in the other namespace.
 func createDatabaseServiceAccountRoleAndRoleBinding(t *testing.T, namespace string) error {
 	sa := corev1.ServiceAccount{}
-	err := e2eutil.TestClient.Get(context.TODO(), types.NamespacedName{Name: "mongodb-database", Namespace: e2eutil.OperatorNamespace}, &sa)
+	err := e2eutil.TestClient.Get(context.TODO(), types.NamespacedName{Name: "admongodb-database", Namespace: e2eutil.OperatorNamespace}, &sa)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -83,7 +83,7 @@ func createDatabaseServiceAccountRoleAndRoleBinding(t *testing.T, namespace stri
 	}
 
 	role := rbacv1.Role{}
-	err = e2eutil.TestClient.Get(context.TODO(), types.NamespacedName{Name: "mongodb-database", Namespace: e2eutil.OperatorNamespace}, &role)
+	err = e2eutil.TestClient.Get(context.TODO(), types.NamespacedName{Name: "admongodb-database", Namespace: e2eutil.OperatorNamespace}, &role)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -97,7 +97,7 @@ func createDatabaseServiceAccountRoleAndRoleBinding(t *testing.T, namespace stri
 	}
 
 	rolebinding := rbacv1.RoleBinding{}
-	err = e2eutil.TestClient.Get(context.TODO(), types.NamespacedName{Name: "mongodb-database", Namespace: e2eutil.OperatorNamespace}, &rolebinding)
+	err = e2eutil.TestClient.Get(context.TODO(), types.NamespacedName{Name: "admongodb-database", Namespace: e2eutil.OperatorNamespace}, &rolebinding)
 	if err != nil {
 		t.Fatal(err)
 	}
