@@ -38,7 +38,7 @@ const (
 	readinessProbePath                = "/opt/scripts/readinessprobe"
 	agentHealthStatusFilePathEnv      = "AGENT_STATUS_FILEPATH"
 	clusterFilePath                   = "/var/lib/automation/config/cluster-config.json"
-	mongodbDatabaseServiceAccountName = "mongodb-database"
+	mongodbDatabaseServiceAccountName = "admongodb-database"
 	agentHealthStatusFilePathValue    = "/var/log/mongodb-mms-automation/healthstatus/agent-health-status.json"
 
 	MongodbRepoUrl                           = "MONGODB_REPO_URL"
